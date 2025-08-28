@@ -1,0 +1,21 @@
+# build / dipendenze
+node_modules/
+dist/
+build/
+
+# immagini temporanee / cache
+images/cache/
+*.tmp
+*.cache
+
+# env / secrets
+.env
+.env.local
+secrets/
+*.pem
+
+# editor
+.vscode/
+
+# logs
+*.log
