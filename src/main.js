@@ -334,6 +334,12 @@ async function startCamera() {
   setStatus('Apro la fotocamera');
 
   try {
+    const hasCamera = await hasVideoInput();
+    if (hasCamera === false) {
+      setStatus('Fotocamera non rilevata');
+      return;
+    }
+
     cameraStream = await navigator.mediaDevices.getUserMedia({
       video: {
         facingMode: { ideal: 'environment' },
@@ -356,10 +362,37 @@ async function startCamera() {
     console.error(error);
     stopCamera();
     renderEmptyPreview();
-    setStatus('Permesso fotocamera negato');
+    setStatus(cameraErrorMessage(error));
   } finally {
     refs.cameraBtn.disabled = false;
   }
+}
+
+async function hasVideoInput() {
+  if (!navigator.mediaDevices?.enumerateDevices) return null;
+
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    return devices.some((device) => device.kind === 'videoinput');
+  } catch {
+    return null;
+  }
+}
+
+function cameraErrorMessage(error) {
+  if (error?.name === 'NotFoundError' || error?.name === 'OverconstrainedError') {
+    return 'Fotocamera non rilevata';
+  }
+
+  if (error?.name === 'NotAllowedError' || error?.name === 'SecurityError') {
+    return 'Permesso fotocamera negato';
+  }
+
+  if (error?.name === 'NotReadableError') {
+    return 'Fotocamera gia in uso';
+  }
+
+  return 'Fotocamera non disponibile';
 }
 
 function captureFromCamera() {
