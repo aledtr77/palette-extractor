@@ -24,6 +24,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html,
 body,
 #app {
@@ -90,10 +94,22 @@ h2 {
 }
 
 .hero-actions,
-.export-actions {
+.export-actions,
+.source-actions,
+.camera-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.source-actions,
+.camera-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.camera-actions {
+  grid-template-columns: 1fr 1fr;
 }
 
 .workspace {
@@ -201,6 +217,13 @@ h2 {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.camera-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #0b0c0f;
 }
 
 .empty-preview {
@@ -606,6 +629,11 @@ pre {
   .button {
     min-height: 40px;
     padding: 0 12px;
+  }
+
+  .source-actions,
+  .camera-actions {
+    gap: 8px;
   }
 
   .section-head,

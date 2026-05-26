@@ -1,4 +1,5 @@
 import {
+  Camera,
   Check,
   Copy,
   Download,
@@ -6,6 +7,7 @@ import {
   RefreshCcw,
   Sparkles,
   Upload,
+  X,
 } from 'lucide';
 import { contrastRatio, readableTextColor, rgbToHex } from './color.js';
 import { analyzeImage, paletteToCss, paletteToJson } from './extractor.js';
@@ -35,8 +37,19 @@ app.innerHTML = `
           <span class="drop-meta">Analisi locale nel browser. Nessun upload.</span>
         </label>
 
+        <div class="source-actions">
+          <button class="button secondary" id="cameraBtn" type="button" data-icon="camera">
+            Fotocamera
+          </button>
+        </div>
+
         <div class="preview-frame" id="previewFrame">
           <div class="empty-preview" data-icon="image"></div>
+        </div>
+
+        <div class="camera-actions" id="cameraActions" hidden>
+          <button class="button primary" id="captureBtn" type="button" data-icon="camera">Scatta</button>
+          <button class="button secondary" id="closeCameraBtn" type="button" data-icon="x">Chiudi</button>
         </div>
 
         <div class="control-row">
@@ -117,6 +130,10 @@ const refs = {
   fileInput: document.querySelector('#fileInput'),
   dropzone: document.querySelector('#dropzone'),
   previewFrame: document.querySelector('#previewFrame'),
+  cameraBtn: document.querySelector('#cameraBtn'),
+  captureBtn: document.querySelector('#captureBtn'),
+  closeCameraBtn: document.querySelector('#closeCameraBtn'),
+  cameraActions: document.querySelector('#cameraActions'),
   analyzeBtn: document.querySelector('#analyzeBtn'),
   demoBtn: document.querySelector('#demoBtn'),
   resetBtn: document.querySelector('#resetBtn'),
@@ -138,6 +155,7 @@ const refs = {
 
 let currentSource = null;
 let currentResult = null;
+let cameraStream = null;
 
 mountIcons();
 resetRoles();
@@ -149,6 +167,7 @@ refs.paletteSize.addEventListener('input', () => {
 refs.fileInput.addEventListener('change', async (event) => {
   const file = event.target.files?.[0];
   if (!file) return;
+  stopCamera();
   await setSource(await readFile(file));
 });
 
@@ -166,11 +185,20 @@ refs.dropzone.addEventListener('drop', async (event) => {
   refs.dropzone.classList.remove('is-dragging');
   const file = event.dataTransfer.files?.[0];
   if (!file || !file.type.startsWith('image/')) return;
+  stopCamera();
   await setSource(await readFile(file));
 });
 
+refs.cameraBtn.addEventListener('click', startCamera);
+refs.captureBtn.addEventListener('click', captureFromCamera);
+refs.closeCameraBtn.addEventListener('click', () => {
+  stopCamera();
+  if (!currentSource) renderEmptyPreview();
+  setStatus('Fotocamera chiusa');
+});
 refs.analyzeBtn.addEventListener('click', () => runAnalysis());
 refs.demoBtn.addEventListener('click', async () => {
+  stopCamera();
   await setSource(createDemoImage());
   await runAnalysis();
 });
@@ -183,7 +211,7 @@ refs.downloadJsonBtn.addEventListener('click', () => downloadExport('palette.jso
 
 async function runAnalysis() {
   if (!currentSource) {
-    setStatus('Carica prima una foto');
+    setStatus(cameraStream ? 'Scatta prima una foto' : 'Carica prima una foto');
     return;
   }
 
@@ -289,9 +317,75 @@ function renderContrast(roles) {
 }
 
 async function setSource(source) {
+  stopCamera();
   currentSource = source;
   refs.previewFrame.innerHTML = `<img src="${source}" alt="Anteprima immagine caricata" />`;
   setStatus('Immagine caricata');
+}
+
+async function startCamera() {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    setStatus('Fotocamera non disponibile');
+    return;
+  }
+
+  stopCamera();
+  refs.cameraBtn.disabled = true;
+  setStatus('Apro la fotocamera');
+
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+      },
+      audio: false,
+    });
+
+    currentSource = null;
+    refs.previewFrame.innerHTML = `
+      <video class="camera-preview" id="cameraPreview" autoplay muted playsinline></video>
+    `;
+    const video = document.querySelector('#cameraPreview');
+    video.srcObject = cameraStream;
+    await video.play();
+    refs.cameraActions.hidden = false;
+    setStatus('Fotocamera attiva');
+  } catch (error) {
+    console.error(error);
+    stopCamera();
+    renderEmptyPreview();
+    setStatus('Permesso fotocamera negato');
+  } finally {
+    refs.cameraBtn.disabled = false;
+  }
+}
+
+function captureFromCamera() {
+  const video = document.querySelector('#cameraPreview');
+  if (!video || !video.videoWidth || !video.videoHeight) {
+    setStatus('Fotocamera non pronta');
+    return;
+  }
+
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const context = canvas.getContext('2d');
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  const source = canvas.toDataURL('image/jpeg', 0.92);
+  stopCamera();
+  setSource(source);
+  setStatus('Scatto pronto');
+}
+
+function stopCamera() {
+  if (cameraStream) {
+    cameraStream.getTracks().forEach((track) => track.stop());
+    cameraStream = null;
+  }
+  refs.cameraActions.hidden = true;
 }
 
 function readFile(file) {
@@ -321,10 +415,11 @@ function createDemoImage() {
 }
 
 function resetApp() {
+  stopCamera();
   currentSource = null;
   currentResult = null;
   refs.fileInput.value = '';
-  refs.previewFrame.innerHTML = '<div class="empty-preview" data-icon="image"></div>';
+  renderEmptyPreview();
   refs.paletteGrid.innerHTML = '<div class="empty-state">Carica un\'immagine o avvia la demo.</div>';
   refs.imageSize.textContent = '-';
   refs.averageColor.textContent = '-';
@@ -334,6 +429,11 @@ function resetApp() {
   resetRoles();
   mountIcons();
   setStatus('Pronto');
+}
+
+function renderEmptyPreview() {
+  refs.previewFrame.innerHTML = '<div class="empty-preview" data-icon="image"></div>';
+  mountIcons();
 }
 
 function resetRoles() {
@@ -413,6 +513,7 @@ function setStatus(message) {
 
 function mountIcons() {
   const icons = {
+    camera: Camera,
     check: Check,
     copy: Copy,
     download: Download,
@@ -420,6 +521,7 @@ function mountIcons() {
     refresh: RefreshCcw,
     sparkles: Sparkles,
     upload: Upload,
+    x: X,
   };
 
   document.querySelectorAll('[data-icon]').forEach((element) => {
