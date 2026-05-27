@@ -12,7 +12,7 @@ const MAX_ANALYSIS_SIDE = 760;
 const MAX_BUCKETS = 12000;
 
 export async function analyzeImage(source, options = {}) {
-  const paletteSize = options.paletteSize ?? 8;
+  const paletteSize = normalizePaletteSize(options.paletteSize);
   const image = await loadImage(source);
   const sample = sampleImage(image);
   const palette = extractPalette(sample.buckets, paletteSize);
@@ -174,12 +174,19 @@ function extractPalette(buckets, size) {
     });
   }
 
+  const totalPixelCount = buckets.reduce((sum, bucket) => sum + bucket.count, 0);
   const merged = mergeNearbyColors(centers)
-    .map((color) => decorateColor(color, buckets))
+    .map((color) => decorateColor(color, totalPixelCount))
     .filter((color) => color.coverage >= 0.005)
     .sort((a, b) => b.score - a.score);
 
   return merged.slice(0, size);
+}
+
+function normalizePaletteSize(value) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return 8;
+  return Math.max(4, Math.min(10, Math.round(parsed)));
 }
 
 function seedCenters(buckets, size) {
@@ -252,8 +259,7 @@ function mergeNearbyColors(colors) {
   return merged;
 }
 
-function decorateColor(color, buckets) {
-  const total = buckets.reduce((sum, bucket) => sum + bucket.count, 0);
+function decorateColor(color, total) {
   const hsl = rgbToHsl(color.r, color.g, color.b);
   const hex = rgbToHex(color);
   const text = readableTextColor(color);
