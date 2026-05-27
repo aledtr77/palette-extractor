@@ -48,6 +48,7 @@ const TRANSLATIONS = {
     contrastEmpty: "I controlli contrasto compariranno dopo l'analisi.",
     themePreview: 'Anteprima tema',
     developedBy: 'Sviluppato da',
+    footerNote: 'Palette extractor per interfacce, brand e prodotti digitali.',
     language: 'Lingua',
     copy: 'Copia',
     roles: {
@@ -107,6 +108,7 @@ const TRANSLATIONS = {
     contrastEmpty: 'Contrast controls will appear after analysis.',
     themePreview: 'Theme preview',
     developedBy: 'Developed by',
+    footerNote: 'Palette extractor for interfaces, brands and digital products.',
     language: 'Language',
     copy: 'Copy',
     roles: {
@@ -279,8 +281,11 @@ app.innerHTML = `
     </section>
 
     <footer class="site-footer">
-      <span data-i18n="developedBy">Sviluppato da</span>
-      <a href="https://codedge.it" target="_blank" rel="noopener noreferrer">codedge.it</a>
+      <div class="footer-brand">
+        <span data-i18n="developedBy">Sviluppato da</span>
+        <a href="https://codedge.it" target="_blank" rel="noopener noreferrer">codedge.it</a>
+      </div>
+      <p data-i18n="footerNote">Palette extractor per interfacce, brand e prodotti digitali.</p>
     </footer>
   </main>
 `;
