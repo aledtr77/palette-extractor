@@ -1,17 +1,17 @@
 :root {
-  --bg: #101114;
-  --panel: #181a1f;
-  --panel-soft: #20232a;
-  --surface: #f7f2e8;
-  --surface-2: #e8f0ec;
-  --ink: #f4f5f0;
-  --muted: #a8a9a3;
+  --bg: #2a2a2a;
+  --panel: #3a3a3a;
+  --panel-soft: #363636;
+  --surface: #303030;
+  --surface-2: #444;
+  --surface-dark: #222222;
+  --ink: #f2f2f2;
+  --muted: #e0e0e0;
   --line: rgba(255, 255, 255, 0.12);
-  --blue: #2f80ed;
-  --green: #1f9d75;
-  --rose: #d9465f;
-  --amber: #d99b28;
-  --shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+  --blue: #007bf0;
+  --blue-deep: #0b59ab;
+  --link: #8fceff;
+  --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
   color: var(--ink);
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -36,10 +36,7 @@ body,
 
 body {
   margin: 0;
-  background:
-    linear-gradient(135deg, rgba(47, 128, 237, 0.16), transparent 28%),
-    linear-gradient(315deg, rgba(31, 157, 117, 0.16), transparent 30%),
-    var(--bg);
+  background: var(--bg);
 }
 
 button,
@@ -68,7 +65,7 @@ button {
 
 .eyebrow {
   margin: 0 0 6px;
-  color: #81c9a7;
+  color: var(--link);
   font-size: 0.78rem;
   font-weight: 760;
   letter-spacing: 0;
@@ -124,8 +121,8 @@ h2 {
 }
 
 .language-option.is-active {
-  background: rgba(129, 201, 167, 0.18);
-  color: #d8f3dc;
+  background: rgba(0, 123, 240, 0.22);
+  color: var(--ink);
 }
 
 .source-actions,
@@ -148,7 +145,7 @@ h2 {
 .input-panel,
 .results,
 .panel {
-  background: rgba(24, 26, 31, 0.92);
+  background: linear-gradient(180deg, var(--panel), var(--panel-soft));
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
   backdrop-filter: blur(18px);
@@ -176,9 +173,9 @@ h2 {
   place-items: center;
   gap: 7px;
   padding: 14px;
-  border: 1px dashed rgba(129, 201, 167, 0.7);
+  border: 1px dashed rgba(143, 206, 255, 0.72);
   border-radius: 8px;
-  background: linear-gradient(180deg, rgba(129, 201, 167, 0.1), rgba(47, 128, 237, 0.06));
+  background: linear-gradient(180deg, rgba(0, 123, 240, 0.14), rgba(255, 255, 255, 0.025));
   cursor: pointer;
   text-align: center;
   transition:
@@ -192,7 +189,7 @@ h2 {
 .dropzone:focus-visible,
 .dropzone:focus-within {
   border-color: var(--blue);
-  background: linear-gradient(180deg, rgba(47, 128, 237, 0.18), rgba(31, 157, 117, 0.1));
+  background: linear-gradient(180deg, rgba(0, 123, 240, 0.24), rgba(255, 255, 255, 0.04));
   transform: translateY(-1px);
 }
 
@@ -213,7 +210,7 @@ h2 {
   place-items: center;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.08);
-  color: #a6d9bd;
+  color: var(--link);
 }
 
 .drop-title {
@@ -244,7 +241,7 @@ h2 {
   background:
     linear-gradient(45deg, rgba(255, 255, 255, 0.04) 25%, transparent 25%),
     linear-gradient(-45deg, rgba(255, 255, 255, 0.04) 25%, transparent 25%),
-    #0b0c0f;
+    var(--surface-dark);
   background-size: 22px 22px;
 }
 
@@ -258,7 +255,7 @@ h2 {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  background: #0b0c0f;
+  background: var(--surface-dark);
 }
 
 .empty-preview {
@@ -276,7 +273,7 @@ h2 {
 
 .range {
   width: 100%;
-  accent-color: var(--green);
+  accent-color: var(--blue);
 }
 
 .button {
@@ -306,7 +303,7 @@ h2 {
 .hex-copy:focus-visible,
 .role-item:focus-visible,
 .contrast-preview button:focus-visible {
-  outline: 2px solid #b7f0cc;
+  outline: 2px solid var(--link);
   outline-offset: 3px;
 }
 
@@ -316,7 +313,13 @@ h2 {
 }
 
 .primary {
-  background: linear-gradient(135deg, var(--blue), var(--green));
+  background-color: var(--blue-deep);
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.06) 42%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }
 
 .secondary {
@@ -325,7 +328,8 @@ h2 {
 }
 
 .secondary:hover {
-  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(143, 206, 255, 0.58);
+  background: rgba(0, 123, 240, 0.16);
 }
 
 .analyze-button {
@@ -386,8 +390,8 @@ h2 {
   min-height: 32px;
   padding: 0 11px;
   border-radius: 999px;
-  background: rgba(31, 157, 117, 0.16);
-  color: #b7f0cc;
+  background: rgba(0, 123, 240, 0.18);
+  color: var(--link);
   font-size: 0.86rem;
   font-weight: 720;
 }
@@ -561,8 +565,8 @@ pre {
   overflow: auto;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #0b0c0f;
-  color: #d8f3dc;
+  background: var(--surface-dark);
+  color: #cfeaff;
   font-size: 0.82rem;
   line-height: 1.55;
 }
@@ -603,7 +607,7 @@ pre {
 }
 
 .site-footer a {
-  color: #b7f0cc;
+  color: var(--link);
   font-size: 1rem;
   font-weight: 820;
   text-decoration: none;
@@ -639,7 +643,7 @@ pre {
 }
 
 .site-footer a:focus-visible {
-  outline: 2px solid #b7f0cc;
+  outline: 2px solid var(--link);
   outline-offset: 3px;
   border-radius: 4px;
 }
