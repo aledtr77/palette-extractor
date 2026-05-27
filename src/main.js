@@ -3,7 +3,6 @@ import {
   Check,
   Copy,
   Download,
-  Image,
   RefreshCcw,
   Sparkles,
   Upload,
@@ -192,7 +191,7 @@ app.innerHTML = `
         </div>
 
         <div class="preview-frame" id="previewFrame">
-          <div class="empty-preview" data-icon="image"></div>
+          <div class="empty-preview"></div>
         </div>
 
         <div class="camera-actions" id="cameraActions" hidden>
@@ -684,10 +683,8 @@ function resetApp() {
 function renderEmptyPreview() {
   const empty = document.createElement('div');
   empty.className = 'empty-preview';
-  empty.dataset.icon = 'image';
   empty.setAttribute('aria-hidden', 'true');
   refs.previewFrame.replaceChildren(empty);
-  mountIcons();
 }
 
 function resetRoles() {
@@ -824,7 +821,6 @@ function mountIcons() {
     check: Check,
     copy: Copy,
     download: Download,
-    image: Image,
     refresh: RefreshCcw,
     sparkles: Sparkles,
     upload: Upload,

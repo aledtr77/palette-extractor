@@ -79,7 +79,7 @@ button {
 .hero-title {
   max-width: 1180px;
   margin: 0 0 6px;
-  color: var(--ink);
+  color: var(--link);
   font-size: clamp(1.45rem, 1.95vw, 2.45rem);
   font-weight: 800;
   line-height: 1.06;
@@ -94,7 +94,6 @@ p {
 
 .hero-subtitle {
   max-width: 760px;
-  color: var(--link);
   font-size: 0.92rem;
   font-weight: 720;
   line-height: 1.35;
