@@ -76,7 +76,7 @@ button {
   padding: 0 0 26px;
 }
 
-.eyebrow {
+.hero-title {
   margin: 0 0 6px;
   color: var(--link);
   font-size: 0.78rem;
@@ -91,10 +91,11 @@ p {
   margin: 0;
 }
 
-h1 {
+.hero-subtitle {
   max-width: 1180px;
-  font-size: clamp(1.55rem, 2.15vw, 2.75rem);
-  line-height: 1.03;
+  font-size: clamp(1.45rem, 1.95vw, 2.45rem);
+  font-weight: 800;
+  line-height: 1.06;
   letter-spacing: 0;
 }
 
@@ -772,13 +773,13 @@ pre {
     padding-bottom: 20px;
   }
 
-  h1 {
-    font-size: 1.55rem;
+  .hero-subtitle {
+    font-size: 1.42rem;
     line-height: 1.08;
     max-width: 100%;
   }
 
-  .eyebrow {
+  .hero-title {
     margin-bottom: 4px;
     font-size: 0.68rem;
   }

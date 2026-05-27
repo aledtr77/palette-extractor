@@ -160,8 +160,8 @@ app.innerHTML = `
   <main class="shell">
     <section class="hero">
       <div>
-        <p class="eyebrow">Codedge Palette Extractor</p>
-        <h1 data-i18n="title">Da foto a palette UI, con colori piu puliti e riutilizzabili.</h1>
+        <h1 class="hero-title">Codedge Palette Extractor</h1>
+        <p class="hero-subtitle" data-i18n="title">Da foto a palette UI, con colori piu puliti e riutilizzabili.</p>
       </div>
       <div class="hero-actions">
         <div class="language-switch" role="group" aria-label="Lingua">
