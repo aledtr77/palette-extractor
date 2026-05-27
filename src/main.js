@@ -1,4 +1,5 @@
 import {
+  ArrowUpRight,
   Camera,
   Check,
   Copy,
@@ -48,7 +49,10 @@ const TRANSLATIONS = {
     contrastEmpty: "I controlli contrasto compariranno dopo l'analisi.",
     themePreview: 'Anteprima tema',
     developedBy: 'Sviluppato da',
-    footerNote: 'Palette extractor per interfacce, brand e prodotti digitali.',
+    footerKicker: 'Chromatic workflow',
+    footerNote:
+      'Uno strumento Codedge per trasformare immagini reali in palette ordinate, ruoli UI e asset esportabili.',
+    footerSignature: 'Progettato per prototipi, brand system e interfacce digitali.',
     privacyPolicy: 'Privacy Policy',
     cookiePolicy: 'Cookie Policy',
     language: 'Lingua',
@@ -110,7 +114,10 @@ const TRANSLATIONS = {
     contrastEmpty: 'Contrast controls will appear after analysis.',
     themePreview: 'Theme preview',
     developedBy: 'Developed by',
-    footerNote: 'Palette extractor for interfaces, brands and digital products.',
+    footerKicker: 'Chromatic workflow',
+    footerNote:
+      'A Codedge tool that turns real images into ordered palettes, UI roles and exportable assets.',
+    footerSignature: 'Designed for prototypes, brand systems and digital interfaces.',
     privacyPolicy: 'Privacy Policy',
     cookiePolicy: 'Cookie Policy',
     language: 'Language',
@@ -285,15 +292,26 @@ app.innerHTML = `
     </section>
 
     <footer class="site-footer">
-      <div class="footer-brand">
-        <span data-i18n="developedBy">Sviluppato da</span>
-        <a href="https://codedge.it" target="_blank" rel="noopener noreferrer">codedge.it</a>
+      <div class="footer-main">
+        <div class="footer-mark" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="footer-copy">
+          <span class="footer-kicker" data-i18n="footerKicker">Chromatic workflow</span>
+          <p data-i18n="footerNote">Uno strumento Codedge per trasformare immagini reali in palette ordinate, ruoli UI e asset esportabili.</p>
+        </div>
       </div>
       <div class="footer-meta">
-        <p data-i18n="footerNote">Palette extractor per interfacce, brand e prodotti digitali.</p>
+        <p data-i18n="footerSignature">Progettato per prototipi, brand system e interfacce digitali.</p>
+        <div class="footer-brand">
+          <span data-i18n="developedBy">Sviluppato da</span>
+          <a href="https://codedge.it" target="_blank" rel="noopener noreferrer" data-icon="external">codedge.it</a>
+        </div>
         <nav class="footer-links" aria-label="Policy">
-          <a href="https://codedge.it/privacy-policy/" target="_blank" rel="noopener noreferrer" data-i18n="privacyPolicy">Privacy Policy</a>
-          <a href="https://codedge.it/cookie-policy/" target="_blank" rel="noopener noreferrer" data-i18n="cookiePolicy">Cookie Policy</a>
+          <a href="https://codedge.it/privacy-policy/" target="_blank" rel="noopener noreferrer" data-i18n="privacyPolicy" data-icon="external">Privacy Policy</a>
+          <a href="https://codedge.it/cookie-policy/" target="_blank" rel="noopener noreferrer" data-i18n="cookiePolicy" data-icon="external">Cookie Policy</a>
         </nav>
       </div>
     </footer>
@@ -795,6 +813,8 @@ function applyTranslations() {
 
   const statusKey = refs.status.dataset.statusKey;
   if (statusKey) refs.status.textContent = formatStatus(statusKey);
+
+  mountIcons();
 }
 
 function setStatus(key, values = {}) {
@@ -822,6 +842,7 @@ function mountIcons() {
     check: Check,
     copy: Copy,
     download: Download,
+    external: ArrowUpRight,
     image: Image,
     refresh: RefreshCcw,
     sparkles: Sparkles,
