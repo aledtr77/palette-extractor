@@ -54,7 +54,7 @@ button {
 .shell {
   width: min(1800px, 100%);
   margin: 0 auto;
-  padding: 12px 32px;
+  padding: 28px 32px;
 }
 
 .hero {
@@ -63,7 +63,7 @@ button {
   justify-content: space-between;
   gap: 20px;
   min-height: 64px;
-  padding: 0 0 10px;
+  padding: 0 0 26px;
 }
 
 .eyebrow {
@@ -539,7 +539,7 @@ pre {
 
 @media (max-width: 980px) {
   .shell {
-    padding: 18px;
+    padding: 24px 18px;
   }
 
   .hero {
@@ -562,14 +562,14 @@ pre {
 
 @media (max-width: 620px) {
   .shell {
-    padding: 12px;
+    padding: 18px 12px;
   }
 
   .hero {
     display: grid;
     gap: 12px;
     min-height: auto;
-    padding-bottom: 12px;
+    padding-bottom: 20px;
   }
 
   h1 {
