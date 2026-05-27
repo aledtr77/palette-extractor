@@ -236,7 +236,7 @@ app.innerHTML = `
             <h2 data-i18n="dominantPalette">Palette dominante</h2>
             <p data-i18n="dominantPaletteMeta">Ordinata per rilevanza percettiva, non solo per numero grezzo di pixel.</p>
           </div>
-          <div class="status" id="status" role="status" aria-live="polite" data-status-key="ready">Pronto</div>
+          <div class="sr-only" id="status" role="status" aria-live="polite" data-status-key="ready">Pronto</div>
         </div>
 
         <div class="palette-grid" id="paletteGrid">
