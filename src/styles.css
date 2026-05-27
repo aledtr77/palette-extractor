@@ -609,10 +609,28 @@ pre {
   text-decoration: none;
 }
 
-.site-footer p {
+.footer-meta {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
+.footer-meta p {
   max-width: 420px;
   text-align: right;
   line-height: 1.45;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.footer-links a {
+  font-size: 0.82rem;
+  color: var(--muted);
 }
 
 .site-footer a:hover,
@@ -794,9 +812,17 @@ pre {
     padding-top: 16px;
   }
 
-  .site-footer p {
+  .footer-meta {
+    justify-items: start;
+  }
+
+  .footer-meta p {
     max-width: none;
     text-align: left;
+  }
+
+  .footer-links {
+    justify-content: flex-start;
   }
 
   pre {

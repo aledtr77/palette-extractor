@@ -49,6 +49,8 @@ const TRANSLATIONS = {
     themePreview: 'Anteprima tema',
     developedBy: 'Sviluppato da',
     footerNote: 'Palette extractor per interfacce, brand e prodotti digitali.',
+    privacyPolicy: 'Privacy Policy',
+    cookiePolicy: 'Cookie Policy',
     language: 'Lingua',
     copy: 'Copia',
     roles: {
@@ -109,6 +111,8 @@ const TRANSLATIONS = {
     themePreview: 'Theme preview',
     developedBy: 'Developed by',
     footerNote: 'Palette extractor for interfaces, brands and digital products.',
+    privacyPolicy: 'Privacy Policy',
+    cookiePolicy: 'Cookie Policy',
     language: 'Language',
     copy: 'Copy',
     roles: {
@@ -285,7 +289,13 @@ app.innerHTML = `
         <span data-i18n="developedBy">Sviluppato da</span>
         <a href="https://codedge.it" target="_blank" rel="noopener noreferrer">codedge.it</a>
       </div>
-      <p data-i18n="footerNote">Palette extractor per interfacce, brand e prodotti digitali.</p>
+      <div class="footer-meta">
+        <p data-i18n="footerNote">Palette extractor per interfacce, brand e prodotti digitali.</p>
+        <nav class="footer-links" aria-label="Policy">
+          <a href="https://codedge.it/privacy-policy/" target="_blank" rel="noopener noreferrer" data-i18n="privacyPolicy">Privacy Policy</a>
+          <a href="https://codedge.it/cookie-policy/" target="_blank" rel="noopener noreferrer" data-i18n="cookiePolicy">Cookie Policy</a>
+        </nav>
+      </div>
     </footer>
   </main>
 `;
