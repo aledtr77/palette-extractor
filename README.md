@@ -35,5 +35,10 @@ npm run build    # static output in dist/
 
 ## Licence
 
-MIT — see [LICENSE](LICENSE). The code is yours to use; the "Codedge" name and logo
-are not part of the grant.
+Split, and the split matters — see [LICENSE](LICENSE).
+
+**The code is MIT.** The colour maths, the extraction logic, the markup and the styles
+are yours to take and build on.
+
+**The Codedge name, logo and interface text are not.** Fork it, change it, ship it —
+under your own name.
