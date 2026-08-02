@@ -6,12 +6,18 @@ contrast ratios, CSS custom properties and JSON.
 It runs entirely in the browser. The image is read locally and never uploaded — there
 is no server and no request to send it anywhere.
 
-**Live: [codedge.it/tools/palette-extractor](https://codedge.it/tools/palette-extractor/)**
+**Try it: [codedge.it/tools/palette-extractor](https://codedge.it/tools/palette-extractor/)**
 
 [![The tool after running its built-in demo: eight dominant colours with share, hex, rgb, hsl and contrast ratio, the UI roles derived from them, and the CSS export](.github/preview.jpg)](https://codedge.it/tools/palette-extractor/)
 
-That is the built-in **Demo** button, not a staged screenshot — open the tool and
-press it to get the same result.
+That is the built-in **Demo** button, not a staged screenshot — clone this repo, run it
+and press the button to get the same thing.
+
+> **This repo is the standalone version, and the page above is not built from it.**
+> codedge.it carries its own copy of the tool, wired into the site's build. Same tool
+> and same interface, two separate codebases: this one is the one split into modules
+> you can read on their own — the colour maths in `src/color.js`, the clustering in
+> `src/extractor.js`, neither of them tangled up with the site around it.
 
 ## What it does
 
