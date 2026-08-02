@@ -8,6 +8,11 @@ is no server and no request to send it anywhere.
 
 **Live: [codedge.it/tools/palette-extractor](https://codedge.it/tools/palette-extractor/)**
 
+[![The tool after running its built-in demo: eight dominant colours with share, hex, rgb, hsl and contrast ratio, the UI roles derived from them, and the CSS export](.github/preview.jpg)](https://codedge.it/tools/palette-extractor/)
+
+That is the built-in **Demo** button, not a staged screenshot — open the tool and
+press it to get the same result.
+
 ## What it does
 
 - Extracts a palette from any image you give it
