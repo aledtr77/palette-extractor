@@ -28,10 +28,22 @@ and press the button to get the same thing.
 
 ## How it works
 
-The colour maths lives in [`src/color.js`](src/color.js): sRGB → HSL and sRGB → Lab
-conversions, relative luminance, WCAG contrast ratio, and perceptual distance in Lab
-used to tell colours apart. Extraction and clustering are in
-[`src/extractor.js`](src/extractor.js).
+One concern per file, so you can open the part you came for and stop there:
+
+| File | What it holds |
+| --- | --- |
+| [`src/color.js`](src/color.js) | sRGB → HSL and sRGB → Lab, relative luminance, WCAG contrast ratio, perceptual distance in Lab |
+| [`src/extractor.js`](src/extractor.js) | Sampling, clustering, and the pass that assigns colours to UI roles |
+| [`src/camera.js`](src/camera.js) | The `getUserMedia` lifecycle and the frame grab — knows nothing about the interface |
+| [`src/export.js`](src/export.js) | Clipboard and file download, with the fallback for when the Clipboard API is refused |
+| [`src/render.js`](src/render.js) | Markup for the swatches, the roles and the contrast card |
+| [`src/i18n.js`](src/i18n.js) | Every string the user reads, and the current locale |
+| [`src/icons.js`](src/icons.js) | Lucide icon data → inline `<svg>`, so no icon font is fetched |
+| [`src/template.js`](src/template.js) | The interface, as one markup string |
+| [`src/main.js`](src/main.js) | Wiring only: element references, the four pieces of state, the listeners |
+
+Start with `color.js` and `extractor.js` if you came for the colour work — they are
+where the actual thinking is, and neither imports anything from the app around it.
 
 Vanilla JavaScript and Vite, no framework. The only runtime dependency is
 [`lucide`](https://lucide.dev) for the icons.
