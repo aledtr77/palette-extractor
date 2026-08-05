@@ -1,21 +1,20 @@
-# build / dipendenze
+# Comments in English, like the rest of the repo. Entries that never matched
+# anything here are gone: build/, images/cache/, secrets/, *.tmp and *.cache
+# came from another project's file and only made this one harder to read.
+
+# build / dependencies
 node_modules/
 dist/
-build/
-
-# immagini temporanee / cache
-images/cache/
-*.tmp
-*.cache
 
 # env / secrets
 .env
 .env.local
-secrets/
 *.pem
 
-# editor
+# editor / OS
 .vscode/
+.DS_Store
 
 # logs
 *.log
+npm-debug.log*

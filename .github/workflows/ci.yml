@@ -25,7 +25,18 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      # Qui non si pubblica niente: il build serve a sapere che chi clona
-      # questo repo ottiene qualcosa che compila.
+      # The colour maths and the clustering: sRGB → HSL and sRGB → Lab, the WCAG
+      # ratio, the merge threshold, the role assignment, and the CSS and JSON the
+      # tool exports. This is the part that runs without a DOM, so it is the part
+      # that can be checked without a browser — and it is where a defect hides
+      # best, because a wrong contrast ratio still renders a perfectly nice
+      # swatch. The rest is checked in a browser, which is the only place it can
+      # be checked.
+      - name: Test
+        run: npm test
+
+      # This job does not publish: Cloudflare Pages builds the repo itself on
+      # every push to main. Building here says that whoever clones it gets
+      # something that compiles, and that the deploy is not about to fail.
       - name: Build
         run: npm run build

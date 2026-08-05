@@ -1,0 +1,69 @@
+<!doctype html>
+<!--
+  At the root because that is where Cloudflare Pages, Netlify and GitHub Pages
+  look for it. Its link is absolute for the same reason: it answers for any
+  unknown URL at any depth, so a relative "index.html" would resolve somewhere
+  different every time.
+
+  Self-contained on purpose — no stylesheet, no script. A 404 that depends on
+  the build is a 404 that can break in the exact situation it exists for.
+-->
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pagina non trovata — Codedge Palette Extractor</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#2a2a2a" />
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-content: center;
+        gap: 1rem;
+        padding: 2rem;
+        text-align: center;
+        background: #2a2a2a;
+        color: #f2f2f2;
+        font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.5rem, 5vw, 2rem);
+      }
+
+      p {
+        margin: 0;
+        color: #e0e0e0;
+      }
+
+      a {
+        display: inline-block;
+        margin-top: 0.5rem;
+        padding: 0.7rem 1.4rem;
+        border-radius: 8px;
+        background: #007bf0;
+        color: #fff;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      a:hover,
+      a:focus-visible {
+        background: #0b59ab;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Questa pagina non c'è</h1>
+    <p>Il Palette Extractor sta su una pagina sola, ed è quella qui sotto.</p>
+    <a href="/">Apri il Palette Extractor</a>
+  </body>
+</html>
