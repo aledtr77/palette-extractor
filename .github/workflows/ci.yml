@@ -35,6 +35,12 @@ jobs:
       - name: Test
         run: npm test
 
+      # The README advertises a test count. Typed by hand it is right once and
+      # wrong from the next commit on, so this fails the build when the badge
+      # and the suite disagree.
+      - name: Test-count badge
+        run: npm run badge:check
+
       # This job does not publish: Cloudflare Pages builds the repo itself on
       # every push to main. Building here says that whoever clones it gets
       # something that compiles, and that the deploy is not about to fail.
