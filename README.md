@@ -1,23 +1,27 @@
 # Palette Extractor
 
+[![lint · tests · build](https://img.shields.io/github/actions/workflow/status/aledtr77/palette-extractor/ci.yml?branch=main&label=lint%20%C2%B7%20tests%20%C2%B7%20build)](https://github.com/aledtr77/palette-extractor/actions/workflows/ci.yml)
+[![42 tests](https://img.shields.io/badge/tests-42%20(Vitest)-3fb950)](tests/)
+[![licence: code MIT, brand reserved](https://img.shields.io/badge/licence-code%20MIT%20%C2%B7%20brand%20reserved-0969da)](LICENSE)
+
 Pulls a colour palette out of an image and turns it into something usable: UI roles,
 contrast ratios, CSS custom properties and JSON.
 
 It runs entirely in the browser. The image is read locally and never uploaded — there
 is no server and no request to send it anywhere.
 
-**Try it: [codedge.it/tools/palette-extractor](https://codedge.it/tools/palette-extractor/)**
+**Live demo: [color-extraction.pages.dev](https://color-extraction.pages.dev/)** — built
+from this repo, from this branch.
 
-[![The tool after running its built-in demo: eight dominant colours with share, hex, rgb, hsl and contrast ratio, the UI roles derived from them, and the CSS export](.github/preview.jpg)](https://codedge.it/tools/palette-extractor/)
+[![The tool after running its built-in demo: eight dominant colours with share, hex, rgb, hsl and contrast ratio, the UI roles derived from them, and the CSS export](.github/preview.jpg)](https://color-extraction.pages.dev/)
 
 That is the built-in **Demo** button, not a staged screenshot — clone this repo, run it
-and press the button to get the same thing.
+and press the button to get the same thing. Two commands, no key, no account, nothing to
+configure.
 
-> **This repo is the standalone version, and the page above is not built from it.**
-> codedge.it carries its own copy of the tool, wired into the site's build. Same tool
-> and same interface, two separate codebases: this one is the one split into modules
-> you can read on their own — the colour maths in `src/color.js`, the clustering in
-> `src/extractor.js`, neither of them tangled up with the site around it.
+codedge.it ships this tool as one of its four as well, built into the site. This is the
+tool on its own: no site around it, one concern per file, nothing to unpick before you
+can read it or drop it into something else.
 
 ## What it does
 
@@ -48,12 +52,36 @@ where the actual thinking is, and neither imports anything from the app around i
 Vanilla JavaScript and Vite, no framework. The only runtime dependency is
 [`lucide`](https://lucide.dev) for the icons.
 
+## Tests
+
+42 tests over the part that runs without a DOM: the sRGB → HSL and sRGB → Lab
+conversions, relative luminance and the WCAG ratio, the threshold that decides two
+colours are the same one, the role assignment, and the CSS and JSON that come out the
+other end. They check values that can be worked out by hand or come from the WCAG
+definition — not what the code happens to return today, which is a test that cannot
+fail for a good reason.
+
+The one that earns its place: `readableTextColor` is swept across the whole RGB cube
+and every result has to clear AA. Two colours cannot cover every background — around
+L\*50 white and black are equally far away — and that sweep is what found the gap.
+
+Extraction from a real image, the camera and the clipboard need a browser, so they are
+checked in one. Lint, tests and build all run on every push.
+
+```bash
+npm test         # 42 tests (Vitest)
+npm run lint     # ESLint
+```
+
 ## Run it locally
+
+Node 20.19 or newer (22.12+ on the 22 line) — what Vite 8 asks for.
 
 ```bash
 npm install
 npm run dev      # http://localhost:5173
 npm run build    # static output in dist/
+npm run preview  # serve the build
 ```
 
 ## Licence
