@@ -2,8 +2,18 @@
 // the UI roles and the contrast card. Each takes data and returns a string —
 // they touch no state and no elements, so the caller decides where they land.
 
-import { contrastRatio, readableTextColor } from './color.js';
+import { contrastRatio, readableTextColor, wcagLevel } from './color.js';
 import { t } from './strings.js';
+
+// A ratio and the grade it clears, together. Printed apart they are two facts
+// the reader has to join; printed together they are an answer.
+function ratioMarkup(ratio) {
+  const level = wcagLevel(ratio);
+
+  return `<strong class="ratio">${ratio.toFixed(1)}:1 <span class="wcag" data-level="${level}">${t(
+    `wcag.${level}`,
+  )}</span></strong>`;
+}
 
 export function swatchMarkup(color, index) {
   const coverage = Math.round(color.coverage * 1000) / 10;
@@ -25,7 +35,7 @@ export function swatchMarkup(color, index) {
         <button type="button" class="hex-copy" data-copy="${color.hex}">${color.hex.toUpperCase()}</button>
         <span>rgb(${color.r}, ${color.g}, ${color.b})</span>
         <span>hsl(${color.hsl.h} ${color.hsl.s}% ${color.hsl.l}%)</span>
-        <span>Aa ${color.text.ratio.toFixed(1)}:1</span>
+        <span class="swatch-ratio">Aa ${ratioMarkup(color.text.ratio)}</span>
       </div>
     </article>
   `;
@@ -72,10 +82,14 @@ export function contrastMarkup(roles) {
       </button>
     </div>
     <div class="contrast-list">
-      <span>Text / Background <strong>${textRatio.toFixed(1)}:1</strong></span>
-      <span>Primary / Background <strong>${primaryRatio.toFixed(1)}:1</strong></span>
-      <span>Accent / Background <strong>${accentRatio.toFixed(1)}:1</strong></span>
+      <span>Text / Background ${ratioMarkup(textRatio)}</span>
+      <span>Primary / Background ${ratioMarkup(primaryRatio)}</span>
+      <span>Accent / Background ${ratioMarkup(accentRatio)}</span>
     </div>
+    <p class="contrast-note">
+      Graded for normal text: AA needs 4.5:1, AAA 7:1. <strong>AA Large</strong> clears
+      3:1 — enough for large text and UI components, not for body copy.
+    </p>
   `;
 }
 

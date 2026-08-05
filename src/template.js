@@ -4,6 +4,12 @@
 // JavaScript afterwards. Everything the user reads that never changes lives in
 // this file; what has to be produced at runtime comes from strings.js.
 
+import {
+  DEFAULT_PALETTE_SIZE,
+  MAX_PALETTE_SIZE,
+  MIN_PALETTE_SIZE,
+} from './extractor.js';
+
 // Shared by the markup below and by the reset, so the two cannot drift apart.
 export const EMPTY_CSS_PREVIEW = ':root {\n  --color-1: ...\n}';
 
@@ -60,9 +66,16 @@ export const APP_MARKUP = `
 
         <div class="control-row">
           <label for="paletteSize">Colors</label>
-          <output id="paletteSizeValue">8</output>
+          <output id="paletteSizeValue" for="paletteSize">${DEFAULT_PALETTE_SIZE}</output>
         </div>
-        <input class="range" id="paletteSize" type="range" min="4" max="10" value="8" />
+        <input
+          class="range"
+          id="paletteSize"
+          type="range"
+          min="${MIN_PALETTE_SIZE}"
+          max="${MAX_PALETTE_SIZE}"
+          value="${DEFAULT_PALETTE_SIZE}"
+        />
 
         <button class="button primary analyze-button" id="analyzeBtn" type="button" data-icon="sparkles">
           <span>Extract palette</span>
@@ -90,7 +103,11 @@ export const APP_MARKUP = `
             <h2>Dominant palette</h2>
             <p>Sorted by perceptual relevance, not only by raw pixel count.</p>
           </div>
-          <div class="sr-only" id="status" role="status" aria-live="polite" data-status-key="ready">Ready</div>
+          <!-- Visible as well as announced. Every message the app produces
+               arrives here — "Image is too large", "Camera permission denied",
+               "CSS copied" — and a message a sighted user cannot see is the
+               same as no message at all: the app just appears not to react. -->
+          <div class="status" id="status" role="status" aria-live="polite" data-status-key="ready" data-status-tone="neutral">Ready</div>
         </div>
 
         <div class="palette-grid" id="paletteGrid">

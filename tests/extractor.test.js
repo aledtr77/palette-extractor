@@ -43,6 +43,19 @@ describe('normalizePaletteSize', () => {
     expect(normalizePaletteSize(undefined)).toBe(8);
     expect(normalizePaletteSize(NaN)).toBe(8);
   });
+
+  // Number(null) and Number('') are both 0 — finite, and low enough to clamp to
+  // the minimum. They mean the same thing undefined means, so they have to give
+  // the same answer, or an empty input silently becomes a four-colour palette.
+  it('treats null and the empty string as absent, not as zero', () => {
+    expect(normalizePaletteSize(null)).toBe(8);
+    expect(normalizePaletteSize('')).toBe(8);
+  });
+
+  it('still clamps a real zero to the minimum', () => {
+    expect(normalizePaletteSize(0)).toBe(4);
+    expect(normalizePaletteSize('0')).toBe(4);
+  });
 });
 
 describe('mergeNearbyColors', () => {

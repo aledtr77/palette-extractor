@@ -52,6 +52,12 @@ export function rgbToHsl(r, g, b) {
   };
 }
 
+// 0.03928 here and 0.04045 in rgbToLab() are not a typo and not a drift: they
+// are two different documents. WCAG 2.x fixes the luminance threshold at
+// 0.03928, the sRGB standard rounds the same crossing to 0.04045, and the two
+// have never been reconciled. Contrast ratios are a WCAG claim, so they follow
+// WCAG; Lab is a colour-science conversion, so it follows sRGB. The gap between
+// them is under one part in 4000 of a channel and cannot move a ratio.
 export function relativeLuminance({ r, g, b }) {
   const [rs, gs, bs] = [r, g, b].map((value) => {
     const channel = value / 255;
@@ -74,7 +80,26 @@ export function contrastRatio(first, second) {
 const WHITE = { r: 255, g: 255, b: 255 };
 const SOFT_BLACK = { r: 10, g: 12, b: 16 };
 const PURE_BLACK = { r: 0, g: 0, b: 0 };
-const AA_NORMAL_TEXT = 4.5;
+
+export const AA_LARGE_TEXT = 3;
+export const AA_NORMAL_TEXT = 4.5;
+export const AAA_NORMAL_TEXT = 7;
+
+/**
+ * Which WCAG 2.1 grade a contrast ratio actually clears, as a token — the words
+ * for it live in strings.js, because this file does maths and not prose.
+ *
+ * The tool's whole claim is contrast, so a ratio printed on its own is only half
+ * an answer: 1.04:1 and 7.2:1 look equally like data until something says which
+ * one you can ship. 3:1 is the floor for large text and for UI components,
+ * 4.5:1 for body text, 7:1 for AAA.
+ */
+export function wcagLevel(ratio) {
+  if (ratio >= AAA_NORMAL_TEXT) return 'aaa';
+  if (ratio >= AA_NORMAL_TEXT) return 'aa';
+  if (ratio >= AA_LARGE_TEXT) return 'aaLarge';
+  return 'fail';
+}
 
 function betterOn(background, dark) {
   const whiteRatio = contrastRatio(WHITE, background);

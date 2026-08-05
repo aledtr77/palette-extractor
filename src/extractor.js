@@ -1,4 +1,5 @@
 import {
+  clamp,
   contrastRatio,
   hueDistance,
   labDistance,
@@ -10,6 +11,14 @@ import {
 
 const MAX_ANALYSIS_SIDE = 760;
 const MAX_BUCKETS = 12000;
+
+// The slider's range and its starting point, owned here rather than in the
+// markup: normalizePaletteSize() is what enforces them, so it is what should
+// define them. template.js reads these to render the control, which is why the
+// two cannot disagree.
+export const MIN_PALETTE_SIZE = 4;
+export const MAX_PALETTE_SIZE = 10;
+export const DEFAULT_PALETTE_SIZE = 8;
 
 export async function analyzeImage(source, options = {}) {
   const paletteSize = normalizePaletteSize(options.paletteSize);
@@ -188,9 +197,14 @@ export function extractPalette(buckets, size) {
 }
 
 export function normalizePaletteSize(value) {
+  // null and '' are checked before Number(), which reads both as 0 — a finite
+  // number that would clamp to MIN. They mean "nothing was given", same as
+  // undefined, and "nothing was given" has one answer: the default.
+  if (value === null || value === undefined || value === '') return DEFAULT_PALETTE_SIZE;
+
   const parsed = Number(value);
-  if (!Number.isFinite(parsed)) return 8;
-  return Math.max(4, Math.min(10, Math.round(parsed)));
+  if (!Number.isFinite(parsed)) return DEFAULT_PALETTE_SIZE;
+  return clamp(Math.round(parsed), MIN_PALETTE_SIZE, MAX_PALETTE_SIZE);
 }
 
 function seedCenters(buckets, size) {

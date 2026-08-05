@@ -9,7 +9,7 @@ import * as camera from './camera.js';
 import { copyText, downloadText } from './export.js';
 import { createDemoImage } from './demo.js';
 import { mountIcons } from './icons.js';
-import { t } from './strings.js';
+import { statusTone, t } from './strings.js';
 import {
   contrastMarkup,
   emptyStateMarkup,
@@ -62,17 +62,35 @@ let currentSource = null;
 let currentResult = null;
 let currentObjectUrl = null;
 
+// Now that the slider re-runs the analysis on release, two runs can be in
+// flight at once — drag, let go, drag again. Each run takes the token it was
+// given and drops its own result if a later one has already claimed the
+// counter, so what is on screen is always the palette for the slider's current
+// value and not whichever request happened to come back last. Loading a new
+// image or resetting retires the token too.
+let analysisToken = 0;
+
 mountIcons();
 resetRoles();
 
+// 'input' tracks the thumb so the number under the cursor is the number on
+// screen; 'change' fires once, on release.
 refs.paletteSize.addEventListener('input', () => {
   refs.paletteSizeValue.value = refs.paletteSize.value;
+});
+
+// Re-runs on release when a palette is already showing. Without this the slider
+// and the swatches disagree the moment you touch it, and nothing on screen says
+// which of the two is the current one. The analysis is a few hundred
+// milliseconds on the worst image the sampler will hand it, so it is cheaper to
+// redo than to explain.
+refs.paletteSize.addEventListener('change', () => {
+  if (currentResult) runAnalysis();
 });
 
 refs.fileInput.addEventListener('change', (event) => {
   const file = event.target.files?.[0];
   if (!file || !isValidImageFile(file)) return;
-  closeCamera();
   setSource(URL.createObjectURL(file), { objectUrl: true });
 });
 
@@ -91,7 +109,6 @@ refs.dropzone.addEventListener('drop', (event) => {
 
   const file = event.dataTransfer.files?.[0];
   if (!file || !isValidImageFile(file)) return;
-  closeCamera();
   setSource(URL.createObjectURL(file), { objectUrl: true });
 });
 
@@ -109,9 +126,9 @@ refs.closeCameraBtn.addEventListener('click', () => {
   setStatus('cameraClosed');
 });
 
+// setSource() closes the camera itself, so these do not do it first.
 refs.analyzeBtn.addEventListener('click', () => runAnalysis());
 refs.demoBtn.addEventListener('click', async () => {
-  closeCamera();
   setSource(createDemoImage());
   await runAnalysis();
 });
@@ -140,20 +157,25 @@ async function runAnalysis() {
     return;
   }
 
+  const token = (analysisToken += 1);
   refs.analyzeBtn.disabled = true;
   setStatus('analyzing');
 
   try {
-    currentResult = await analyzeImage(currentSource, {
+    const result = await analyzeImage(currentSource, {
       paletteSize: Number(refs.paletteSize.value),
     });
-    renderResult(currentResult);
-    setStatus('paletteReady');
+
+    if (token !== analysisToken) return;
+
+    currentResult = result;
+    renderResult(result);
+    setStatus(result.palette.length ? 'paletteReady' : 'noColors');
   } catch (error) {
     console.error(error);
-    setStatus('analysisError');
+    if (token === analysisToken) setStatus('analysisError');
   } finally {
-    refs.analyzeBtn.disabled = false;
+    if (token === analysisToken) refs.analyzeBtn.disabled = false;
   }
 }
 
@@ -162,6 +184,19 @@ function renderResult(result) {
   refs.pixelCount.textContent = result.meta.pixelCount.toLocaleString('en-US');
   refs.averageColor.textContent = rgbToHex(result.meta.average).toUpperCase();
   refs.averageColor.style.color = rgbToHex(result.meta.average);
+
+  // A palette can legitimately come back empty: the sampler drops pure white and
+  // pure black, so an image made of nothing else leaves it with no buckets at
+  // all. That is a result, not a failure — but rendering it as four empty boxes
+  // under the word "ready" reads as a broken app, and the export would be an
+  // empty ":root {}". Say what happened instead, and leave the panels as they
+  // look before the first run.
+  if (!result.palette.length) {
+    refs.paletteGrid.innerHTML = emptyStateMarkup('noColorsFound');
+    resetRoles();
+    refs.codePreview.textContent = EMPTY_CSS_PREVIEW;
+    return;
+  }
 
   refs.paletteGrid.innerHTML = result.palette.map(swatchMarkup).join('');
   refs.rolesList.innerHTML = rolesMarkup(result.roles);
@@ -172,6 +207,9 @@ function renderResult(result) {
 function setSource(source, { objectUrl = false } = {}) {
   closeCamera();
   revokeCurrentObjectUrl();
+  // Whatever was being analysed is not this image. Retiring the token stops an
+  // in-flight run from painting the previous picture's palette over the new one.
+  analysisToken += 1;
   currentSource = source;
   currentObjectUrl = objectUrl ? source : null;
   renderImagePreview(source);
@@ -255,7 +293,6 @@ function captureShot() {
     return;
   }
 
-  closeCamera();
   setSource(shot);
   setStatus('shotReady');
 }
@@ -268,8 +305,10 @@ function closeCamera() {
 function resetApp() {
   closeCamera();
   revokeCurrentObjectUrl();
+  analysisToken += 1;
   currentSource = null;
   currentResult = null;
+  refs.analyzeBtn.disabled = false;
   refs.fileInput.value = '';
   renderEmptyPreview();
   renderEmptyPalette();
@@ -299,13 +338,17 @@ function resetRoles() {
   refs.contrastCard.innerHTML = emptyStateMarkup('contrastEmpty', { small: true });
 }
 
+// Both return '' when there is nothing worth exporting, which is what the copy
+// and download handlers test. An empty palette counts: paletteToCss() would
+// happily produce ":root {}", and handing someone that as a successful copy is
+// worse than telling them there is nothing to copy.
 function getCss() {
-  if (!currentResult) return '';
+  if (!currentResult?.palette.length) return '';
   return paletteToCss(currentResult.palette, currentResult.roles);
 }
 
 function getJson() {
-  if (!currentResult) return '';
+  if (!currentResult?.palette.length) return '';
   return paletteToJson(currentResult.palette, currentResult.roles, currentResult.meta);
 }
 
@@ -331,13 +374,10 @@ function downloadExport(filename, text) {
   setStatus('downloaded', { value: filename });
 }
 
-function setStatus(key, values = {}) {
+// data-status-key is what the styles and any future test hook off; the tone
+// drives the colour. The text is derived from both here and nowhere else.
+function setStatus(key, { value = '' } = {}) {
   refs.status.dataset.statusKey = key;
-  refs.status.dataset.statusValue = values.value ?? '';
-  refs.status.textContent = formatStatus(key, values);
-}
-
-function formatStatus(key, values = {}) {
-  const value = values.value ?? refs.status.dataset.statusValue ?? '';
-  return t(`status.${key}`).replace('{value}', value);
+  refs.status.dataset.statusTone = statusTone(key);
+  refs.status.textContent = t(`status.${key}`).replace('{value}', value);
 }

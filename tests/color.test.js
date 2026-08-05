@@ -15,6 +15,7 @@ import {
   rgbToHex,
   rgbToHsl,
   rgbToLab,
+  wcagLevel,
 } from '../src/color.js';
 
 describe('rgbToHsl', () => {
@@ -99,6 +100,38 @@ describe('relativeLuminance and contrastRatio', () => {
     const a = { r: 20, g: 40, b: 60 };
     const b = { r: 200, g: 210, b: 220 };
     expect(contrastRatio(a, b)).toBeCloseTo(contrastRatio(b, a), 10);
+  });
+});
+
+// The thresholds are quoted from WCAG 2.1: 1.4.3 sets 4.5:1 for normal text and
+// 3:1 for large text, 1.4.6 raises normal text to 7:1, 1.4.11 puts UI components
+// at 3:1. Each boundary is checked on the value itself and just under it —
+// "greater than or equal" is the whole of the difference between passing and not.
+describe('wcagLevel', () => {
+  it('grades each band by the ratio that defines it', () => {
+    expect(wcagLevel(21)).toBe('aaa');
+    expect(wcagLevel(7)).toBe('aaa');
+    expect(wcagLevel(6.99)).toBe('aa');
+    expect(wcagLevel(4.5)).toBe('aa');
+    expect(wcagLevel(4.49)).toBe('aaLarge');
+    expect(wcagLevel(3)).toBe('aaLarge');
+    expect(wcagLevel(2.99)).toBe('fail');
+    expect(wcagLevel(1)).toBe('fail');
+  });
+
+  // The case that started this: a background with no dark colour in the image
+  // leaves roles sitting at about 1:1 against each other. The old card printed
+  // the number and stopped, which reads as data rather than as a verdict.
+  it('calls a role pair the eye cannot separate a failure', () => {
+    const ratio = contrastRatio(hexToRgb('#faf0c8'), hexToRgb('#f0ebdc'));
+    expect(ratio).toBeLessThan(1.2);
+    expect(wcagLevel(ratio)).toBe('fail');
+  });
+
+  it('agrees with readableTextColor, which never returns less than AA', () => {
+    for (const hex of ['#518175', '#ffffff', '#000000', '#7f7f7f', '#0f766e']) {
+      expect(['aa', 'aaa']).toContain(wcagLevel(readableTextColor(hexToRgb(hex)).ratio));
+    }
   });
 });
 

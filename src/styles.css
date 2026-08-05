@@ -360,6 +360,7 @@ h2 {
 
 .section-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
@@ -373,6 +374,37 @@ h2 {
 .section-head p {
   margin-top: 4px;
   font-size: 0.92rem;
+}
+
+/* The status line, which used to be .sr-only and so only ever reached a screen
+   reader. It sits in the slot .section-head already left free on the right.
+   Tone is an attribute rather than a class because the message and its severity
+   are one decision, made in strings.js, and this only paints it. */
+.status {
+  flex: 0 0 auto;
+  align-self: center;
+  max-width: 20ch;
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.status[data-status-tone="problem"] {
+  border-color: rgba(255, 154, 154, 0.45);
+  background: rgba(255, 120, 120, 0.14);
+  color: #ffb3b3;
+}
+
+.status[data-status-tone="done"] {
+  border-color: rgba(110, 231, 168, 0.4);
+  background: rgba(110, 231, 168, 0.14);
+  color: #8ceebd;
 }
 
 .palette-grid {
@@ -530,6 +562,55 @@ h2 {
   display: flex;
   justify-content: space-between;
   gap: 10px;
+}
+
+.contrast-note {
+  margin: 10px 0 0;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.ratio {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+/* The grade, not the ratio, is what the reader is looking for. Colour carries
+   it, but never alone: the label spells out AAA / AA / AA Large / Fail, so the
+   badge still says which is which in greyscale or to a colour-blind reader. */
+.wcag {
+  padding: 1px 6px;
+  border: 1px solid currentcolor;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.wcag[data-level="aaa"] {
+  color: #6ee7a8;
+}
+
+.wcag[data-level="aa"] {
+  color: #86d0ff;
+}
+
+.wcag[data-level="aaLarge"] {
+  color: #f3c969;
+}
+
+.wcag[data-level="fail"] {
+  color: #ff9a9a;
+}
+
+.swatch-ratio {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .export-actions {

@@ -2,20 +2,12 @@
 // turns that into an inline <svg> so the page never fetches an icon font or a
 // sprite sheet.
 
-import {
-  Camera,
-  Check,
-  Copy,
-  Download,
-  RefreshCcw,
-  Sparkles,
-  Upload,
-  X,
-} from 'lucide';
+import { Camera, Copy, Download, RefreshCcw, Sparkles, Upload, X } from 'lucide';
 
+// One entry per data-icon actually used in template.js. An icon imported and
+// never mounted is bytes in the bundle that nothing on screen accounts for.
 const ICONS = {
   camera: Camera,
-  check: Check,
   copy: Copy,
   download: Download,
   refresh: RefreshCcw,

@@ -1,0 +1,33 @@
+# Cloudflare Pages reads this file from the root of the published output.
+# public/ is copied there verbatim by Vite, so this is where it belongs in the
+# source tree. Netlify uses the same format; other hosts ignore the file.
+
+/*
+  # The tool's one claim is that the image never leaves the browser. This is the
+  # part of that claim a visitor can verify without reading the source: the
+  # policy below gives the page no way to send anything anywhere.
+  #
+  # connect-src is 'self' and not 'none' because Vite's modulepreload polyfill
+  # fetches the preloaded chunk on browsers without native support — same origin,
+  # already in the bundle. 'none' would break the page on exactly those browsers.
+  #
+  # style-src needs 'unsafe-inline': every swatch, role dot and contrast preview
+  # is painted with a style attribute holding a colour that only exists at
+  # runtime. img-src needs data: and blob: for the same reason — an uploaded file
+  # becomes a blob: URL, the demo an inline SVG, a camera frame a data: URL.
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; form-action 'none'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
+
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # getUserMedia stays available to this page and is denied to anything embedded
+  # in it; the rest is switched off because the tool never asks for it.
+  Permissions-Policy: camera=(self), microphone=(), geolocation=(), interest-cohort=()
+
+  Cross-Origin-Opener-Policy: same-origin
+
+# Hashed filenames: the content cannot change without the name changing, so
+# these can be held forever. index.html and 404.html deliberately are not listed
+# — they keep the default short cache, which is what lets a deploy take effect.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
