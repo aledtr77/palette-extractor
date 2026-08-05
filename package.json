@@ -2,11 +2,24 @@
   "name": "palette-extractor",
   "version": "1.0.0",
   "private": true,
+  "description": "Pulls a colour palette out of an image entirely in the browser, and turns it into UI roles, WCAG contrast ratios, CSS custom properties and JSON",
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Alessandro DTR",
+  "homepage": "https://color-extraction.pages.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aledtr77/palette-extractor.git"
+  },
   "type": "module",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
@@ -17,6 +30,7 @@
     "@eslint/js": "^10.0.1",
     "eslint": "^10.8.0",
     "globals": "^17.9.0",
-    "vite": "^8.0.14"
+    "vite": "^8.0.14",
+    "vitest": "^4.1.10"
   }
 }

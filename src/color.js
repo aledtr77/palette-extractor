@@ -71,18 +71,37 @@ export function contrastRatio(first, second) {
   return (light + 0.05) / (dark + 0.05);
 }
 
-export function readableTextColor(background) {
-  const white = { r: 255, g: 255, b: 255 };
-  const black = { r: 10, g: 12, b: 16 };
-  const whiteRatio = contrastRatio(white, background);
-  const blackRatio = contrastRatio(black, background);
-  const rgb = whiteRatio >= blackRatio ? white : black;
+const WHITE = { r: 255, g: 255, b: 255 };
+const SOFT_BLACK = { r: 10, g: 12, b: 16 };
+const PURE_BLACK = { r: 0, g: 0, b: 0 };
+const AA_NORMAL_TEXT = 4.5;
+
+function betterOn(background, dark) {
+  const whiteRatio = contrastRatio(WHITE, background);
+  const darkRatio = contrastRatio(dark, background);
+  const rgb = whiteRatio >= darkRatio ? WHITE : dark;
 
   return {
     ...rgb,
     hex: rgbToHex(rgb),
-    ratio: Math.max(whiteRatio, blackRatio),
+    ratio: Math.max(whiteRatio, darkRatio),
   };
+}
+
+/**
+ * Text that can actually be read on the given background.
+ *
+ * Two colours cannot cover every background: around L*50 white and black are
+ * equally far away, and the lift that softens SOFT_BLACK is enough to land the
+ * worst case at 4.42 — under what AA asks for normal text. Backgrounds near
+ * #518175 hit it. Pure black buys the difference back (its own worst case
+ * against white is 4.58), so it steps in exactly where the softened black
+ * falls short and nowhere else: the palette keeps its softer black on every
+ * background where that one already reads.
+ */
+export function readableTextColor(background) {
+  const softened = betterOn(background, SOFT_BLACK);
+  return softened.ratio >= AA_NORMAL_TEXT ? softened : betterOn(background, PURE_BLACK);
 }
 
 export function rgbToLab({ r, g, b }) {

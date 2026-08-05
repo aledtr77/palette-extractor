@@ -129,7 +129,11 @@ function sampleImage(image) {
   };
 }
 
-function extractPalette(buckets, size) {
+// Exported for the tests as much as for the app: this is the part that runs
+// without a DOM, so it is the part that can be checked without a browser.
+// seedCenters, nearestCenter, decorateColor and roleColorScore stay private —
+// they are steps inside these, and they are covered through them.
+export function extractPalette(buckets, size) {
   if (!buckets.length) return [];
 
   const k = Math.min(size + 2, buckets.length);
@@ -183,7 +187,7 @@ function extractPalette(buckets, size) {
   return merged.slice(0, size);
 }
 
-function normalizePaletteSize(value) {
+export function normalizePaletteSize(value) {
   const parsed = Number(value);
   if (!Number.isFinite(parsed)) return 8;
   return Math.max(4, Math.min(10, Math.round(parsed)));
@@ -228,7 +232,7 @@ function nearestCenter(bucket, centers) {
   return bestIndex;
 }
 
-function mergeNearbyColors(colors) {
+export function mergeNearbyColors(colors) {
   const sorted = [...colors].sort((a, b) => b.weight - a.weight);
   const merged = [];
 
@@ -280,7 +284,7 @@ function decorateColor(color, total) {
   };
 }
 
-function pickRoles(palette) {
+export function pickRoles(palette) {
   if (!palette.length) return null;
 
   const darkCandidates = palette.filter((color) => color.hsl.l <= 46);
