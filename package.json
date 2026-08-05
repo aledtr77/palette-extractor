@@ -5,7 +5,7 @@
   "description": "Pulls a colour palette out of an image entirely in the browser, and turns it into UI roles, WCAG contrast ratios, CSS custom properties and JSON",
   "license": "SEE LICENSE IN LICENSE",
   "author": "Alessandro DTR",
-  "homepage": "https://color-extraction.pages.dev",
+  "homepage": "https://palette-extractor-7hm.pages.dev",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aledtr77/palette-extractor.git"
