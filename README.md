@@ -41,9 +41,9 @@ One concern per file, so you can open the part you came for and stop there:
 | [`src/camera.js`](src/camera.js) | The `getUserMedia` lifecycle and the frame grab — knows nothing about the interface |
 | [`src/export.js`](src/export.js) | Clipboard and file download, with the fallback for when the Clipboard API is refused |
 | [`src/render.js`](src/render.js) | Markup for the swatches, the roles and the contrast card |
-| [`src/i18n.js`](src/i18n.js) | Every string the user reads, and the current locale |
+| [`src/strings.js`](src/strings.js) | The strings JavaScript produces at runtime — status messages, role labels, accessible names |
 | [`src/icons.js`](src/icons.js) | Lucide icon data → inline `<svg>`, so no icon font is fetched |
-| [`src/template.js`](src/template.js) | The interface, as one markup string |
+| [`src/template.js`](src/template.js) | The interface, as one markup string — the text in it is the final text, not a placeholder JavaScript swaps out |
 | [`src/main.js`](src/main.js) | Wiring only: element references, the four pieces of state, the listeners |
 
 Start with `color.js` and `extractor.js` if you came for the colour work — they are

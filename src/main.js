@@ -9,7 +9,7 @@ import * as camera from './camera.js';
 import { copyText, downloadText } from './export.js';
 import { createDemoImage } from './demo.js';
 import { mountIcons } from './icons.js';
-import { getLocale, localeCode, setLocale, t, translateStaticNodes } from './i18n.js';
+import { t } from './strings.js';
 import {
   contrastMarkup,
   emptyStateMarkup,
@@ -56,7 +56,6 @@ const refs = {
   downloadCssBtn: document.querySelector('#downloadCssBtn'),
   downloadJsonBtn: document.querySelector('#downloadJsonBtn'),
   codePreview: document.querySelector('#codePreview'),
-  languageButtons: document.querySelectorAll('[data-lang]'),
 };
 
 let currentSource = null;
@@ -65,7 +64,6 @@ let currentObjectUrl = null;
 
 mountIcons();
 resetRoles();
-applyTranslations();
 
 refs.paletteSize.addEventListener('input', () => {
   refs.paletteSizeValue.value = refs.paletteSize.value;
@@ -124,10 +122,6 @@ refs.copyJsonBtn.addEventListener('click', () => copyExport('json'));
 refs.downloadCssBtn.addEventListener('click', () => downloadExport('palette.css', getCss()));
 refs.downloadJsonBtn.addEventListener('click', () => downloadExport('palette.json', getJson()));
 
-refs.languageButtons.forEach((button) => {
-  button.addEventListener('click', () => changeLocale(button.dataset.lang));
-});
-
 // Every swatch, hex and role chip is copyable, and they are all rebuilt on each
 // analysis — one delegated listener instead of rebinding them every time.
 document.addEventListener('click', async (event) => {
@@ -165,7 +159,7 @@ async function runAnalysis() {
 
 function renderResult(result) {
   refs.imageSize.textContent = `${result.meta.naturalWidth} x ${result.meta.naturalHeight}px`;
-  refs.pixelCount.textContent = result.meta.pixelCount.toLocaleString(localeCode());
+  refs.pixelCount.textContent = result.meta.pixelCount.toLocaleString('en-US');
   refs.averageColor.textContent = rgbToHex(result.meta.average).toUpperCase();
   refs.averageColor.style.color = rgbToHex(result.meta.average);
 
@@ -335,40 +329,6 @@ function downloadExport(filename, text) {
 
   downloadText(filename, text);
   setStatus('downloaded', { value: filename });
-}
-
-function changeLocale(locale) {
-  if (!setLocale(locale)) return;
-
-  applyTranslations();
-
-  // The palette and the roles carry translated labels, so they are rebuilt from
-  // the result rather than patched in place.
-  if (currentResult) {
-    renderResult(currentResult);
-  } else {
-    renderEmptyPalette();
-    resetRoles();
-  }
-
-  setStatus('languageChanged');
-}
-
-function applyTranslations() {
-  translateStaticNodes();
-
-  refs.languageButtons.forEach((button) => {
-    const isActive = button.dataset.lang === getLocale();
-    button.classList.toggle('is-active', isActive);
-    button.setAttribute('aria-pressed', String(isActive));
-  });
-
-  document.querySelector('.language-switch')?.setAttribute('aria-label', t('language'));
-
-  const statusKey = refs.status.dataset.statusKey;
-  if (statusKey) refs.status.textContent = formatStatus(statusKey);
-
-  mountIcons();
 }
 
 function setStatus(key, values = {}) {

@@ -118,36 +118,6 @@ h2 {
   gap: 14px;
 }
 
-.hero-actions .language-switch {
-  margin-right: 18px;
-}
-
-.language-switch {
-  display: inline-grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 38px;
-  padding: 3px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.language-option {
-  min-width: 42px;
-  padding: 0 10px;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 0.82rem;
-  font-weight: 820;
-  cursor: pointer;
-}
-
-.language-option.is-active {
-  background: rgba(0, 123, 240, 0.22);
-  color: var(--ink);
-}
-
 .source-actions,
 .camera-actions {
   display: grid;
@@ -321,7 +291,6 @@ h2 {
 }
 
 .button:focus-visible,
-.language-option:focus-visible,
 .swatch-chip:focus-visible,
 .hex-copy:focus-visible,
 .role-item:focus-visible,
@@ -714,15 +683,14 @@ pre {
     font-size: 0.86rem;
   }
 
+  /* Two columns, not three: the first used to be `auto` for the language
+     switch. Left at three, Demo would size to its text and a dead column
+     would sit next to Reset. */
   .hero-actions {
     width: 100%;
     display: grid;
-    grid-template-columns: auto 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
-  }
-
-  .hero-actions .language-switch {
-    margin-right: 0;
   }
 
   .results,

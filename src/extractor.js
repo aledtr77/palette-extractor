@@ -38,7 +38,7 @@ export function loadImage(source) {
     image.crossOrigin = 'anonymous';
     image.decoding = 'async';
     image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error('Immagine non leggibile'));
+    image.onerror = () => reject(new Error('Image could not be read'));
     image.src = source;
   });
 }

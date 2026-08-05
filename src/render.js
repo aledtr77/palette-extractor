@@ -3,7 +3,7 @@
 // they touch no state and no elements, so the caller decides where they land.
 
 import { contrastRatio, readableTextColor } from './color.js';
-import { t } from './i18n.js';
+import { t } from './strings.js';
 
 export function swatchMarkup(color, index) {
   const coverage = Math.round(color.coverage * 1000) / 10;
