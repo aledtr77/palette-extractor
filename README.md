@@ -2,7 +2,7 @@
 
 [![lint · tests · build](https://img.shields.io/github/actions/workflow/status/aledtr77/palette-extractor/ci.yml?branch=main&label=lint%20%C2%B7%20tests%20%C2%B7%20build)](https://github.com/aledtr77/palette-extractor/actions/workflows/ci.yml)
 [![47 tests](https://img.shields.io/badge/tests-47%20(Vitest)-3fb950)](tests/)
-[![licence: code MIT, brand reserved](https://img.shields.io/badge/licence-code%20MIT%20%C2%B7%20brand%20reserved-0969da)](LICENSE)
+[![licence: MIT](https://img.shields.io/badge/licence-MIT-0969da)](LICENSE)
 
 Pulls a colour palette out of an image and turns it into something usable: UI roles,
 contrast ratios, CSS custom properties and JSON.
@@ -120,10 +120,10 @@ a site served from a domain root needs; a GitHub Pages *project* site lives unde
 
 ## Licence
 
-Split, and the split matters — see [LICENSE](LICENSE).
+**MIT** — see [LICENSE](LICENSE). The colour maths, the extraction logic, the markup,
+the styles and the interface text are yours to take, change and ship, commercially or
+otherwise.
 
-**The code is MIT.** The colour maths, the extraction logic, the markup and the styles
-are yours to take and build on.
-
-**The Codedge name, logo and interface text are not.** Fork it, change it, ship it —
-under your own name.
+The one thing that isn't yours is the **Codedge** name and logo, which no copyright
+licence hands over anyway — [TRADEMARK.md](TRADEMARK.md) says so out loud. Fork it,
+build on it, give it your own name.

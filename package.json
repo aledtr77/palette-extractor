@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Pulls a colour palette out of an image entirely in the browser, and turns it into UI roles, WCAG contrast ratios, CSS custom properties and JSON",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "author": "Alessandro DTR",
   "homepage": "https://palette-extractor-7hm.pages.dev",
   "repository": {
@@ -21,7 +21,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "badge": "node scripts/sync-test-badge.mjs",
+    "badge:check": "node scripts/sync-test-badge.mjs --check"
   },
   "dependencies": {
     "lucide": "^0.468.0"
