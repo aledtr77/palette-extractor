@@ -10,8 +10,8 @@ contrast ratios, CSS custom properties and JSON.
 It runs entirely in the browser. The image is read locally and never uploaded — there
 is no server and no request to send it anywhere.
 
-**Live demo: [palette-extractor-7hm.pages.dev](https://palette-extractor-7hm.pages.dev/)** — built
-from this repo, from this branch.
+**Use it: [palette-extractor-7hm.pages.dev](https://palette-extractor-7hm.pages.dev/)** — the
+working tool, not a preview of one, built from this repo, from this branch.
 
 [![The tool after running its built-in demo: eight dominant colours with share, hex, rgb, hsl and contrast ratio, the UI roles derived from them, and the CSS export](public/preview.jpg)](https://palette-extractor-7hm.pages.dev/)
 
