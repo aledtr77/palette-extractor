@@ -52,12 +52,12 @@ One concern per file, so you can open the part you came for and stop there:
 Start with `color.js` and `extractor.js` if you came for the colour work — they are
 where the actual thinking is, and neither imports anything from the app around it.
 
-Vanilla JavaScript and Vite, no framework. The only runtime dependency is
+Built with modular JavaScript and Vite. The only runtime dependency is
 [`lucide`](https://lucide.dev) for the icons.
 
 ## Tests
 
-47 tests over the part that runs without a DOM: the sRGB → HSL and sRGB → Lab
+133 tests over the parts that run without a DOM: the sRGB → HSL and sRGB → Lab
 conversions, relative luminance and the WCAG ratio, the threshold that decides two
 colours are the same one, the role assignment, and the CSS and JSON that come out the
 other end. They check values that can be worked out by hand or come from the WCAG
@@ -76,7 +76,7 @@ Extraction from a real image, the camera and the clipboard need a browser, so th
 checked in one. Lint, tests and build all run on every push.
 
 ```bash
-npm test         # 47 tests (Vitest)
+npm test         # 133 tests (Vitest)
 npm run lint     # ESLint
 ```
 
