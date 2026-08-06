@@ -1,7 +1,7 @@
 # Palette Extractor
 
 [![lint · tests · build](https://img.shields.io/github/actions/workflow/status/aledtr77/palette-extractor/ci.yml?branch=main&label=lint%20%C2%B7%20tests%20%C2%B7%20build)](https://github.com/aledtr77/palette-extractor/actions/workflows/ci.yml)
-[![47 tests](https://img.shields.io/badge/tests-47%20(Vitest)-3fb950)](tests/)
+[![128 tests](https://img.shields.io/badge/tests-128%20(Vitest)-3fb950)](tests/)
 [![licence: MIT](https://img.shields.io/badge/licence-MIT-0969da)](LICENSE)
 
 Pulls a colour palette out of an image and turns it into something usable: UI roles,
