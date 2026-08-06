@@ -78,6 +78,37 @@ export function runCases(impl) {
   });
 }
 
+// Exact equality was the first attempt and it was wrong: Math.pow does not
+// return the same last bit on every V8, so the fixture generated on Node 24
+// failed on the runner's Node 22 by one unit in the last place —
+// 0.006048833022857055 against ...54. The contract is about the maths agreeing,
+// not about which engine rounded last, so numbers are compared with room for
+// that and nothing more.
+//
+// 1e-12 is four orders of magnitude above the noise and six below anything a
+// real change produces: moving 0.2126 to 0.2127 in the luminance shifts the
+// same value by 5e-6. The floor of 1 in the scale keeps the tolerance absolute
+// near zero, where the Lab components live at 1e-7 and relative tolerance would
+// collapse to nothing.
+export const TOLERANCE = 1e-12;
+
+export function closeEnough(actual, expected, tolerance = TOLERANCE) {
+  if (typeof expected === 'number' && typeof actual === 'number') {
+    if (Number.isNaN(expected) || Number.isNaN(actual)) return Number.isNaN(expected) && Number.isNaN(actual);
+    return Math.abs(actual - expected) <= tolerance * Math.max(1, Math.abs(actual), Math.abs(expected));
+  }
+  if (Array.isArray(expected) || Array.isArray(actual)) {
+    if (!Array.isArray(expected) || !Array.isArray(actual) || expected.length !== actual.length) return false;
+    return expected.every((value, i) => closeEnough(actual[i], value, tolerance));
+  }
+  if (expected && actual && typeof expected === 'object' && typeof actual === 'object') {
+    const keys = Object.keys(expected);
+    if (keys.length !== Object.keys(actual).length) return false;
+    return keys.every((key) => closeEnough(actual[key], expected[key], tolerance));
+  }
+  return Object.is(actual, expected);
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const target = process.argv[2] ? new URL(process.argv[2], `file://${process.cwd()}/`).href : DEFAULT_IMPL;
   const impl = await import(target);
