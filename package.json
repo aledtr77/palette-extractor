@@ -1,6 +1,6 @@
 {
   "name": "palette-extractor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Pulls a colour palette out of an image entirely in the browser, and turns it into UI roles, WCAG contrast ratios, CSS custom properties and JSON",
   "license": "MIT",
