@@ -23,6 +23,16 @@ codedge.it ships this tool as one of its four as well, built into the site. This
 tool on its own: no site around it, one concern per file, nothing to unpick before you
 can read it or drop it into something else.
 
+## Project role and AI use
+
+This is an AI-assisted personal project. I defined the product goal, interface,
+privacy constraint and acceptance criteria, then directed the implementation and
+iterations. AI supported much of the code and documentation; I reviewed the changes,
+tested the working tool and used automated checks to verify the behaviour I publish.
+
+The repository is also part of my front-end learning process. It documents the current
+implementation without claiming that I derived or wrote every algorithm unaided.
+
 ## What it does
 
 - Extracts a palette from any image you give it
@@ -49,8 +59,9 @@ One concern per file, so you can open the part you came for and stop there:
 | [`src/template.js`](src/template.js) | The interface, as one markup string — the text in it is the final text, not a placeholder JavaScript swaps out |
 | [`src/main.js`](src/main.js) | Wiring only: element references, the four pieces of state, the listeners |
 
-Start with `color.js` and `extractor.js` if you came for the colour work — they are
-where the actual thinking is, and neither imports anything from the app around it.
+Start with `color.js` and `extractor.js` if you came for the colour work — they contain
+the conversion and extraction behaviour, and neither imports anything from the app
+around it.
 
 Built with modular JavaScript and Vite. The only runtime dependency is
 [`lucide`](https://lucide.dev) for the icons.
