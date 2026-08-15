@@ -25,14 +25,13 @@ can read it or drop it into something else.
 
 ## Project role and AI use
 
-The code in this repository is written by AI models — most of it, not part of it. What
-is mine is the product goal, the interface, the privacy constraint and the acceptance
-criteria; the direction of every iteration; the review of what came back; the automated
-checks that verify the behaviour I publish; and the deployed tool at the other end,
-which I maintain.
+This is an AI-assisted personal project. I defined the product goal, interface,
+privacy constraint and acceptance criteria, then directed the implementation and
+iterations. AI supported much of the code and documentation; I reviewed the changes,
+tested the working tool and used automated checks to verify the behaviour I publish.
 
-The repository documents what the tool currently does. It does not claim that I derived
-the colour maths or wrote the implementation unaided.
+The repository is also part of my front-end learning process. It documents the current
+implementation without claiming that I derived or wrote every algorithm unaided.
 
 ## What it does
 
