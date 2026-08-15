@@ -23,16 +23,6 @@ codedge.it ships this tool as one of its four as well, built into the site. This
 tool on its own: no site around it, one concern per file, nothing to unpick before you
 can read it or drop it into something else.
 
-## Project role and AI use
-
-This is an AI-assisted personal project. I defined the product goal, interface,
-privacy constraint and acceptance criteria, then directed the implementation and
-iterations. AI supported much of the code and documentation; I reviewed the changes,
-tested the working tool and used automated checks to verify the behaviour I publish.
-
-The repository is also part of my front-end learning process. It documents the current
-implementation without claiming that I derived or wrote every algorithm unaided.
-
 ## What it does
 
 - Extracts a palette from any image you give it
@@ -138,3 +128,13 @@ otherwise.
 The one thing that isn't yours is the **Codedge** name and logo, which no copyright
 licence hands over anyway — [TRADEMARK.md](TRADEMARK.md) says so out loud. Fork it,
 build on it, give it your own name.
+
+## How this was built
+
+I defined the product goal, interface, privacy constraint and acceptance criteria,
+then directed the implementation and iterations. AI supported much of the code and
+documentation; I reviewed the changes, tested the working tool and built the automated
+checks that verify the behaviour I publish.
+
+The repository is also part of my front-end learning process. It documents the current
+implementation without claiming that I derived or wrote every algorithm unaided.
