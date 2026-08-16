@@ -1,5 +1,4 @@
 import {
-  clamp,
   contrastRatio,
   hueDistance,
   labDistance,
@@ -11,20 +10,12 @@ import {
 
 const MAX_ANALYSIS_SIDE = 760;
 const MAX_BUCKETS = 12000;
+export const DOMINANT_COLOR_COUNT = 5;
 
-// The slider's range and its starting point, owned here rather than in the
-// markup: normalizePaletteSize() is what enforces them, so it is what should
-// define them. template.js reads these to render the control, which is why the
-// two cannot disagree.
-export const MIN_PALETTE_SIZE = 4;
-export const MAX_PALETTE_SIZE = 10;
-export const DEFAULT_PALETTE_SIZE = 8;
-
-export async function analyzeImage(source, options = {}) {
-  const paletteSize = normalizePaletteSize(options.paletteSize);
+export async function analyzeImage(source) {
   const image = await loadImage(source);
   const sample = sampleImage(image);
-  const palette = extractPalette(sample.buckets, paletteSize);
+  const palette = extractPalette(sample.buckets, DOMINANT_COLOR_COUNT);
   const roles = pickRoles(palette);
 
   return {
@@ -81,11 +72,6 @@ function sampleImage(image) {
     const r = data[index];
     const g = data[index + 1];
     const b = data[index + 2];
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-
-    if (max > 248 && min > 248) continue;
-    if (max < 6 && min < 6) continue;
 
     const key = `${r >> 3},${g >> 3},${b >> 3}`;
     const bucket = buckets.get(key);
@@ -118,7 +104,7 @@ function sampleImage(image) {
         lab: rgbToLab(rgb),
         hsl,
         count: bucket.count,
-        weight: bucket.count * (0.76 + hsl.s / 180),
+        weight: bucket.count,
       };
     })
     .sort((a, b) => b.weight - a.weight);
@@ -191,20 +177,9 @@ export function extractPalette(buckets, size) {
   const merged = mergeNearbyColors(centers)
     .map((color) => decorateColor(color, totalPixelCount))
     .filter((color) => color.coverage >= 0.005)
-    .sort((a, b) => b.score - a.score);
+    .sort((a, b) => b.coverage - a.coverage);
 
   return merged.slice(0, size);
-}
-
-export function normalizePaletteSize(value) {
-  // null and '' are checked before Number(), which reads both as 0 — a finite
-  // number that would clamp to MIN. They mean "nothing was given", same as
-  // undefined, and "nothing was given" has one answer: the default.
-  if (value === null || value === undefined || value === '') return DEFAULT_PALETTE_SIZE;
-
-  const parsed = Number(value);
-  if (!Number.isFinite(parsed)) return DEFAULT_PALETTE_SIZE;
-  return clamp(Math.round(parsed), MIN_PALETTE_SIZE, MAX_PALETTE_SIZE);
 }
 
 function seedCenters(buckets, size) {
@@ -281,8 +256,6 @@ function decorateColor(color, total) {
   const hsl = rgbToHsl(color.r, color.g, color.b);
   const hex = rgbToHex(color);
   const text = readableTextColor(color);
-  const chromaBoost = 0.68 + hsl.s / 145;
-  const lightnessPenalty = hsl.l < 8 || hsl.l > 94 ? 0.72 : 1;
 
   return {
     r: color.r,
@@ -294,7 +267,6 @@ function decorateColor(color, total) {
     text,
     count: color.count,
     coverage: color.count / Math.max(1, total),
-    score: color.count * chromaBoost * lightnessPenalty,
   };
 }
 

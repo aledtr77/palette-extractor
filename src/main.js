@@ -42,9 +42,8 @@ const refs = {
   analyzeBtn: document.querySelector('#analyzeBtn'),
   demoBtn: document.querySelector('#demoBtn'),
   resetBtn: document.querySelector('#resetBtn'),
-  paletteSize: document.querySelector('#paletteSize'),
-  paletteSizeValue: document.querySelector('#paletteSizeValue'),
   paletteGrid: document.querySelector('#paletteGrid'),
+  results: document.querySelector('.results'),
   rolesList: document.querySelector('#rolesList'),
   contrastCard: document.querySelector('#contrastCard'),
   imageSize: document.querySelector('#imageSize'),
@@ -58,49 +57,35 @@ const refs = {
   codePreview: document.querySelector('#codePreview'),
 };
 
+const exportButtons = [
+  refs.copyCssBtn,
+  refs.copyJsonBtn,
+  refs.downloadCssBtn,
+  refs.downloadJsonBtn,
+];
+
 let currentSource = null;
 let currentResult = null;
 let currentObjectUrl = null;
+let cameraRequestToken = 0;
 
-// Now that the slider re-runs the analysis on release, two runs can be in
-// flight at once — drag, let go, drag again. Each run takes the token it was
-// given and drops its own result if a later one has already claimed the
-// counter, so what is on screen is always the palette for the slider's current
-// value and not whichever request happened to come back last. Loading a new
-// image or resetting retires the token too.
+// Each run gets a token. Loading a new image, opening the camera or resetting
+// retires it so an older analysis can never overwrite the current result.
 let analysisToken = 0;
 
 mountIcons();
 resetRoles();
 
-// 'input' tracks the thumb so the number under the cursor is the number on
-// screen; 'change' fires once, on release.
-refs.paletteSize.addEventListener('input', () => {
-  refs.paletteSizeValue.value = refs.paletteSize.value;
-});
-
-// Re-runs on release when a palette is already showing. Without this the slider
-// and the swatches disagree the moment you touch it, and nothing on screen says
-// which of the two is the current one. The analysis is a few hundred
-// milliseconds on the worst image the sampler will hand it, so it is cheaper to
-// redo than to explain.
-refs.paletteSize.addEventListener('change', () => {
-  if (currentResult) runAnalysis();
-});
-
 refs.fileInput.addEventListener('change', (event) => {
   const file = event.target.files?.[0];
   if (!file || !isValidImageFile(file)) return;
   setSource(URL.createObjectURL(file), { objectUrl: true });
+  runAnalysis();
 });
 
 refs.dropzone.addEventListener('dragover', (event) => {
   event.preventDefault();
   refs.dropzone.classList.add('is-dragging');
-});
-
-refs.dropzone.addEventListener('dragleave', () => {
-  refs.dropzone.classList.remove('is-dragging');
 });
 
 refs.dropzone.addEventListener('drop', (event) => {
@@ -110,12 +95,14 @@ refs.dropzone.addEventListener('drop', (event) => {
   const file = event.dataTransfer.files?.[0];
   if (!file || !isValidImageFile(file)) return;
   setSource(URL.createObjectURL(file), { objectUrl: true });
+  runAnalysis();
 });
 
-refs.dropzone.addEventListener('keydown', (event) => {
-  if (event.key !== 'Enter' && event.key !== ' ') return;
-  event.preventDefault();
-  refs.fileInput.click();
+// Drag events bubble from every child in the label. Only clear the highlight
+// when the pointer has actually left the whole drop target.
+refs.dropzone.addEventListener('dragleave', (event) => {
+  if (event.relatedTarget instanceof Node && refs.dropzone.contains(event.relatedTarget)) return;
+  refs.dropzone.classList.remove('is-dragging');
 });
 
 refs.cameraBtn.addEventListener('click', openCamera);
@@ -124,6 +111,7 @@ refs.closeCameraBtn.addEventListener('click', () => {
   closeCamera();
   if (!currentSource) renderEmptyPreview();
   setStatus('cameraClosed');
+  refs.cameraBtn.focus();
 });
 
 // setSource() closes the camera itself, so these do not do it first.
@@ -159,38 +147,46 @@ async function runAnalysis() {
 
   const token = (analysisToken += 1);
   refs.analyzeBtn.disabled = true;
+  setExportsEnabled(false);
+  refs.analyzeBtn.setAttribute('aria-busy', 'true');
+  refs.results.setAttribute('aria-busy', 'true');
+  refs.results.classList.add('is-updating');
+  refs.analyzeBtn.querySelector('span').textContent = t('analyzingAction');
   setStatus('analyzing');
 
   try {
-    const result = await analyzeImage(currentSource, {
-      paletteSize: Number(refs.paletteSize.value),
-    });
+    const result = await analyzeImage(currentSource);
 
     if (token !== analysisToken) return;
 
     currentResult = result;
     renderResult(result);
+    setExportsEnabled(Boolean(result.palette.length));
     setStatus(result.palette.length ? 'paletteReady' : 'noColors');
   } catch (error) {
     console.error(error);
     if (token === analysisToken) setStatus('analysisError');
   } finally {
-    if (token === analysisToken) refs.analyzeBtn.disabled = false;
+    if (token === analysisToken) {
+      refs.analyzeBtn.disabled = false;
+      refs.analyzeBtn.removeAttribute('aria-busy');
+      refs.results.removeAttribute('aria-busy');
+      refs.results.classList.remove('is-updating');
+      refs.analyzeBtn.querySelector('span').textContent = t('extractAction');
+    }
   }
 }
 
 function renderResult(result) {
   refs.imageSize.textContent = `${result.meta.naturalWidth} x ${result.meta.naturalHeight}px`;
   refs.pixelCount.textContent = result.meta.pixelCount.toLocaleString('en-US');
-  refs.averageColor.textContent = rgbToHex(result.meta.average).toUpperCase();
-  refs.averageColor.style.color = rgbToHex(result.meta.average);
+  const averageHex = rgbToHex(result.meta.average);
+  refs.averageColor.textContent = averageHex.toUpperCase();
+  refs.averageColor.style.setProperty('--average-color', averageHex);
+  refs.averageColor.dataset.hasValue = 'true';
 
-  // A palette can legitimately come back empty: the sampler drops pure white and
-  // pure black, so an image made of nothing else leaves it with no buckets at
-  // all. That is a result, not a failure — but rendering it as four empty boxes
-  // under the word "ready" reads as a broken app, and the export would be an
-  // empty ":root {}". Say what happened instead, and leave the panels as they
-  // look before the first run.
+  // A fully transparent image can legitimately produce no buckets. That is a
+  // result, not a failure, and must not be exported as an empty ":root {}".
   if (!result.palette.length) {
     refs.paletteGrid.innerHTML = emptyStateMarkup('noColorsFound');
     resetRoles();
@@ -209,15 +205,19 @@ function setSource(source, { objectUrl = false } = {}) {
   revokeCurrentObjectUrl();
   // Whatever was being analysed is not this image. Retiring the token stops an
   // in-flight run from painting the previous picture's palette over the new one.
-  analysisToken += 1;
+  cancelAnalysis();
   currentSource = source;
   currentObjectUrl = objectUrl ? source : null;
+  clearResult();
   renderImagePreview(source);
   setStatus('imageLoaded');
 }
 
 function isValidImageFile(file) {
-  if (!ACCEPTED_IMAGE_TYPES.has(file.type)) {
+  const extension = file.name.split('.').pop()?.toLowerCase();
+  const acceptedExtension = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp'].includes(extension);
+
+  if (!ACCEPTED_IMAGE_TYPES.has(file.type) && !(file.type === '' && acceptedExtension)) {
     refs.fileInput.value = '';
     setStatus('unsupportedFormat');
     return false;
@@ -252,14 +252,9 @@ async function openCamera() {
     return;
   }
 
-  closeCamera();
-  revokeCurrentObjectUrl();
-  // Dropped here rather than after the stream opens: revoking the object URL
-  // above already invalidated it, so keeping the reference would leave Analyse
-  // pointing at a URL that no longer resolves.
-  currentSource = null;
-
+  const requestToken = (cameraRequestToken += 1);
   refs.cameraBtn.disabled = true;
+  refs.cameraBtn.setAttribute('aria-busy', 'true');
   setStatus('openingCamera');
 
   try {
@@ -268,24 +263,36 @@ async function openCamera() {
       label: t('camera'),
     });
 
+    if (requestToken !== cameraRequestToken) {
+      return;
+    }
+
     if (!started) {
       setStatus('cameraNotFound');
       return;
     }
 
+    revokeCurrentObjectUrl();
+    cancelAnalysis();
+    currentSource = null;
+    clearResult();
     refs.cameraActions.hidden = false;
+    refs.cameraBtn.hidden = true;
+    refs.captureBtn.focus();
     setStatus('cameraActive');
   } catch (error) {
     console.error(error);
+    if (requestToken !== cameraRequestToken) return;
     closeCamera();
-    renderEmptyPreview();
+    if (!currentSource) renderEmptyPreview();
     setStatus(camera.statusKeyForError(error));
   } finally {
     refs.cameraBtn.disabled = false;
+    refs.cameraBtn.removeAttribute('aria-busy');
   }
 }
 
-function captureShot() {
+async function captureShot() {
   const shot = camera.capture();
 
   if (!shot) {
@@ -294,32 +301,54 @@ function captureShot() {
   }
 
   setSource(shot);
-  setStatus('shotReady');
+  await runAnalysis();
 }
 
 function closeCamera() {
+  cameraRequestToken += 1;
   camera.stop();
   refs.cameraActions.hidden = true;
+  refs.cameraBtn.hidden = false;
 }
 
 function resetApp() {
   closeCamera();
   revokeCurrentObjectUrl();
-  analysisToken += 1;
+  cancelAnalysis();
   currentSource = null;
-  currentResult = null;
-  refs.analyzeBtn.disabled = false;
   refs.fileInput.value = '';
   renderEmptyPreview();
+  clearResult();
+  mountIcons();
+  setStatus('ready');
+}
+
+function cancelAnalysis() {
+  analysisToken += 1;
+  refs.analyzeBtn.disabled = false;
+  refs.analyzeBtn.removeAttribute('aria-busy');
+  refs.results.removeAttribute('aria-busy');
+  refs.results.classList.remove('is-updating');
+  refs.analyzeBtn.querySelector('span').textContent = t('extractAction');
+}
+
+function clearResult() {
+  currentResult = null;
   renderEmptyPalette();
   refs.imageSize.textContent = '-';
   refs.averageColor.textContent = '-';
-  refs.averageColor.style.color = '';
+  refs.averageColor.style.removeProperty('--average-color');
+  delete refs.averageColor.dataset.hasValue;
   refs.pixelCount.textContent = '-';
   refs.codePreview.textContent = EMPTY_CSS_PREVIEW;
   resetRoles();
-  mountIcons();
-  setStatus('ready');
+  setExportsEnabled(false);
+}
+
+function setExportsEnabled(enabled) {
+  exportButtons.forEach((button) => {
+    button.disabled = !enabled;
+  });
 }
 
 function renderEmptyPreview() {

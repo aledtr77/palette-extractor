@@ -1,17 +1,17 @@
 :root {
-  --bg: #2a2a2a;
-  --panel: #3a3a3a;
-  --panel-soft: #363636;
-  --surface: #303030;
-  --surface-2: #444;
-  --surface-dark: #222222;
-  --ink: #f2f2f2;
-  --muted: #e0e0e0;
-  --line: rgba(255, 255, 255, 0.12);
-  --blue: #007bf0;
-  --blue-deep: #0b59ab;
-  --link: #8fceff;
-  --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  --bg: #171a21;
+  --panel: #252a34;
+  --panel-soft: #20252e;
+  --surface: #1d222b;
+  --surface-2: #343b48;
+  --surface-dark: #12151b;
+  --ink: #f7f9fc;
+  --muted: #e1e6ee;
+  --line: rgba(255, 255, 255, 0.14);
+  --blue: #168bf5;
+  --blue-deep: #075eaf;
+  --link: #9bd5ff;
+  --shadow: 0 18px 48px rgba(0, 0, 0, 0.3);
   color: var(--ink);
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -22,10 +22,6 @@
 
 * {
   box-sizing: border-box;
-}
-
-[hidden] {
-  display: none !important;
 }
 
 .sr-only {
@@ -49,7 +45,11 @@ body,
 
 body {
   margin: 0;
-  background: var(--bg);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(22, 139, 245, 0.12), transparent 32rem),
+    var(--bg);
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 button,
@@ -94,14 +94,16 @@ p {
 
 .hero-subtitle {
   max-width: 760px;
-  font-size: 0.92rem;
-  font-weight: 720;
-  line-height: 1.35;
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
   letter-spacing: 0;
 }
 
 h2 {
-  font-size: 1.05rem;
+  font-size: 1.25rem;
+  line-height: 1.25;
   letter-spacing: 0;
 }
 
@@ -130,7 +132,7 @@ h2 {
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(320px, 410px) minmax(0, 1fr);
+  grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
   gap: 18px;
   align-items: start;
 }
@@ -141,7 +143,6 @@ h2 {
   background: linear-gradient(180deg, var(--panel), var(--panel-soft));
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
 }
 
 .input-panel {
@@ -157,11 +158,13 @@ h2 {
   min-width: 0;
   padding: 14px 16px;
   border-radius: 8px;
+  container-name: palette-results;
+  container-type: inline-size;
 }
 
 .dropzone {
   position: relative;
-  min-height: 98px;
+  min-height: 116px;
   display: grid;
   place-items: center;
   gap: 7px;
@@ -177,7 +180,6 @@ h2 {
     transform 160ms ease;
 }
 
-.dropzone:hover,
 .dropzone.is-dragging,
 .dropzone:focus-visible,
 .dropzone:focus-within {
@@ -188,12 +190,11 @@ h2 {
 
 .file-input {
   position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
 }
 
 .drop-icon {
@@ -212,7 +213,7 @@ h2 {
 
 .drop-meta,
 .section-head p,
-.metrics span,
+.metrics dt,
 .swatch-meta,
 .role-item small,
 .contrast-list,
@@ -221,7 +222,9 @@ h2 {
 }
 
 .drop-meta {
-  font-size: 0.86rem;
+  max-width: 34ch;
+  font-size: 0.875rem;
+  line-height: 1.45;
 }
 
 .preview-frame {
@@ -255,22 +258,8 @@ h2 {
   color: rgba(255, 255, 255, 0.32);
 }
 
-.control-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.range {
-  width: 100%;
-  accent-color: var(--blue);
-}
-
 .button {
-  min-height: 38px;
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -294,14 +283,29 @@ h2 {
 .swatch-chip:focus-visible,
 .hex-copy:focus-visible,
 .role-item:focus-visible,
-.contrast-preview button:focus-visible {
+.preview-cta:focus-visible,
+pre:focus-visible {
   outline: 2px solid var(--link);
   outline-offset: 3px;
 }
 
 .button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.button[aria-busy="true"] {
   cursor: wait;
-  opacity: 0.62;
+}
+
+.button[aria-busy="true"] svg {
+  animation: busy-spin 900ms linear infinite;
+}
+
+@keyframes busy-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .primary {
@@ -319,19 +323,15 @@ h2 {
   background: rgba(255, 255, 255, 0.07);
 }
 
-.secondary:hover {
-  border-color: rgba(143, 206, 255, 0.58);
-  background: rgba(0, 123, 240, 0.16);
-}
-
 .analyze-button {
   width: 100%;
 }
 
 .metrics {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
+  margin: 0;
 }
 
 .metrics div {
@@ -342,20 +342,41 @@ h2 {
 }
 
 .metrics div:first-child {
-  grid-column: auto;
+  grid-column: 1 / -1;
 }
 
-.metrics span,
-.metrics strong {
+.metrics dt,
+.metrics dd {
   display: block;
-  font-size: 0.9rem;
 }
 
-.metrics strong {
+.metrics dt {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.metrics dd {
   margin-top: 4px;
+  margin-inline: 0;
+  color: var(--ink);
+  font-weight: 750;
+  font-size: 1rem;
+  line-height: 1.35;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+#averageColor[data-has-value]::before {
+  width: 0.8rem;
+  height: 0.8rem;
+  display: inline-block;
+  margin-right: 0.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  background: var(--average-color, transparent);
+  content: "";
+  vertical-align: -0.05rem;
 }
 
 .section-head {
@@ -373,7 +394,8 @@ h2 {
 
 .section-head p {
   margin-top: 4px;
-  font-size: 0.92rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
 }
 
 /* The status line, which used to be .sr-only and so only ever reached a screen
@@ -389,8 +411,8 @@ h2 {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
   color: var(--ink);
-  font-size: 0.78rem;
-  font-weight: 600;
+  font-size: 0.875rem;
+  font-weight: 750;
   line-height: 1.35;
   text-align: center;
 }
@@ -413,6 +435,17 @@ h2 {
   gap: 11px;
 }
 
+.palette-grid,
+.detail-grid {
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.results.is-updating .palette-grid,
+.results.is-updating .detail-grid {
+  opacity: 0.58;
+  transform: translateY(2px);
+}
+
 .swatch {
   min-width: 0;
   overflow: hidden;
@@ -423,7 +456,7 @@ h2 {
 
 .swatch-chip {
   width: 100%;
-  min-height: 68px;
+  min-height: 88px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -436,18 +469,20 @@ h2 {
   padding: 3px 7px;
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.22);
-  font-size: 0.76rem;
+  font-size: 0.875rem;
+  line-height: 1.35;
 }
 
 .swatch-meta {
   display: grid;
-  gap: 3px;
-  padding: 8px 10px 9px;
+  gap: 7px;
+  padding: 12px;
   font-family:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     monospace;
-  font-size: 0.7rem;
-  line-height: 1.35;
+  color: var(--ink);
+  font-size: 0.875rem;
+  line-height: 1.45;
 }
 
 .hex-copy {
@@ -458,6 +493,8 @@ h2 {
   cursor: copy;
   font: inherit;
   font-weight: 800;
+  min-height: 32px;
+  font-size: 1rem;
 }
 
 .detail-grid {
@@ -485,7 +522,8 @@ h2 {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 10px;
+  min-height: 68px;
+  padding: 11px 13px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.05);
@@ -505,14 +543,16 @@ h2 {
 
 .role-item small {
   margin-top: 2px;
+  color: var(--ink);
+  font-size: 0.9375rem;
   font-family:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     monospace;
 }
 
 .role-dot {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   flex: 0 0 auto;
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 50%;
@@ -522,6 +562,17 @@ h2 {
   min-height: 58px;
   border-radius: 8px;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.1));
+  background-size: 200% 100%;
+}
+
+.results.is-updating .role-placeholder {
+  animation: placeholder-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes placeholder-pulse {
+  50% {
+    background-position: 100% 0;
+  }
 }
 
 .contrast-card {
@@ -536,16 +587,18 @@ h2 {
 }
 
 .contrast-preview span {
-  opacity: 0.72;
+  opacity: 1;
 }
 
 .contrast-preview strong {
   font-size: 1.12rem;
 }
 
-.contrast-preview button {
+.preview-cta {
   width: fit-content;
   min-height: 34px;
+  display: inline-flex;
+  align-items: center;
   padding: 0 14px;
   border-radius: 8px;
   font-weight: 800;
@@ -553,9 +606,10 @@ h2 {
 
 .contrast-list {
   display: grid;
-  gap: 5px;
+  gap: 9px;
   margin-top: 8px;
-  font-size: 0.84rem;
+  color: var(--ink);
+  font-size: 0.9375rem;
 }
 
 .contrast-list span {
@@ -566,7 +620,7 @@ h2 {
 
 .contrast-note {
   margin: 10px 0 0;
-  font-size: 0.76rem;
+  font-size: 0.875rem;
   line-height: 1.5;
   color: var(--muted);
 }
@@ -585,7 +639,7 @@ h2 {
   padding: 1px 6px;
   border: 1px solid currentcolor;
   border-radius: 999px;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -614,6 +668,8 @@ h2 {
 }
 
 .export-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   margin-bottom: 12px;
 }
 
@@ -627,7 +683,7 @@ pre {
   border-radius: 8px;
   background: var(--surface-dark);
   color: #cfeaff;
-  font-size: 0.82rem;
+  font-size: 0.9375rem;
   line-height: 1.55;
 }
 
@@ -639,6 +695,9 @@ pre {
   border: 1px dashed var(--line);
   border-radius: 8px;
   text-align: center;
+  padding: 20px;
+  line-height: 1.5;
+  font-size: 0.9375rem;
 }
 
 .empty-state.small {
@@ -656,7 +715,7 @@ pre {
   padding: 18px 0 2px;
   border-top: 1px solid var(--line);
   color: var(--muted);
-  font-size: 0.88rem;
+  font-size: 0.9375rem;
 }
 
 .footer-brand {
@@ -700,16 +759,41 @@ pre {
 }
 
 .footer-links a {
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   color: var(--muted);
   text-decoration-color: rgba(224, 224, 224, 0.32);
 }
 
-.site-footer a:hover,
 .site-footer a:focus-visible {
   color: var(--ink);
   text-decoration-color: currentColor;
   text-underline-offset: 6px;
+}
+
+/* Hover belongs to devices that can actually hover. Touch browsers otherwise
+   keep the last tapped element in a sticky :hover state, making an unrelated
+   button look active while the user scrolls the page. */
+@media (hover: hover) and (pointer: fine) {
+  .dropzone:hover {
+    border-color: var(--blue);
+    background: linear-gradient(180deg, rgba(0, 123, 240, 0.24), rgba(255, 255, 255, 0.04));
+    transform: translateY(-1px);
+  }
+
+  .button:hover:not(:disabled) {
+    filter: brightness(1.1);
+  }
+
+  .secondary:hover {
+    border-color: rgba(143, 206, 255, 0.58);
+    background: rgba(0, 123, 240, 0.16);
+  }
+
+  .site-footer a:hover {
+    color: var(--ink);
+    text-decoration-color: currentColor;
+    text-underline-offset: 6px;
+  }
 }
 
 .site-footer a:focus-visible {
@@ -724,7 +808,36 @@ pre {
   }
 
   .hero {
-    align-items: flex-start;
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    justify-items: stretch;
+    text-align: center;
+  }
+
+  .hero > div:first-child {
+    width: 100%;
+  }
+
+  .hero-title,
+  .hero-subtitle {
+    width: 100%;
+    max-width: none;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .hero-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: stretch;
+    margin-inline: auto;
+  }
+
+  .hero-actions .button {
+    width: 100%;
   }
 
   .workspace,
@@ -747,10 +860,14 @@ pre {
   }
 
   .hero {
-    display: grid;
     gap: 12px;
     min-height: auto;
     padding-bottom: 20px;
+    text-align: center;
+  }
+
+  .hero > div:first-child {
+    width: 100%;
   }
 
   .hero-title {
@@ -760,6 +877,7 @@ pre {
   }
 
   .hero-subtitle {
+    margin-inline: auto;
     margin-bottom: 4px;
     font-size: 0.86rem;
   }
@@ -768,8 +886,6 @@ pre {
      switch. Left at three, Demo would size to its text and a dead column
      would sit next to Reset. */
   .hero-actions {
-    width: 100%;
-    display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
@@ -799,7 +915,7 @@ pre {
 
   .drop-meta,
   .section-head p {
-    font-size: 0.82rem;
+    font-size: 0.875rem;
   }
 
   .preview-frame {
@@ -807,12 +923,8 @@ pre {
     aspect-ratio: 16 / 9;
   }
 
-  .control-row {
-    font-size: 0.85rem;
-  }
-
   .button {
-    min-height: 40px;
+    min-height: 44px;
     padding: 0 12px;
   }
 
@@ -827,7 +939,7 @@ pre {
   }
 
   .metrics {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 7px;
   }
 
@@ -835,9 +947,9 @@ pre {
     padding: 8px;
   }
 
-  .metrics span,
-  .metrics strong {
-    font-size: 0.78rem;
+  .metrics dt,
+  .metrics dd {
+    font-size: 0.875rem;
   }
 
   .section-head {
@@ -852,19 +964,14 @@ pre {
   }
 
   .swatch-chip {
-    min-height: 54px;
+    min-height: 76px;
     padding: 8px;
   }
 
   .swatch-meta {
-    padding: 8px;
-    font-size: 0.66rem;
-    line-height: 1.25;
-  }
-
-  .swatch-meta span:nth-of-type(1),
-  .swatch-meta span:nth-of-type(2) {
-    display: none;
+    padding: 11px;
+    font-size: 0.875rem;
+    line-height: 1.45;
   }
 
   .detail-grid {
@@ -901,17 +1008,28 @@ pre {
     min-height: 142px;
     max-height: 180px;
     padding: 11px;
-    font-size: 0.72rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropzone,
+  .button,
+  .palette-grid,
+  .detail-grid,
+  .site-footer a {
+    transition: none;
+  }
+
+  .button[aria-busy="true"] svg,
+  .results.is-updating .role-placeholder {
+    animation: none;
   }
 }
 
 @media (min-width: 1500px) {
   .workspace {
-    grid-template-columns: minmax(360px, 440px) minmax(0, 1fr);
-  }
-
-  .palette-grid {
-    grid-template-columns: repeat(4, minmax(190px, 1fr));
+    grid-template-columns: minmax(360px, 400px) minmax(0, 1fr);
   }
 
   .swatch-chip {
@@ -919,9 +1037,28 @@ pre {
   }
 }
 
-@media (max-width: 420px) {
+/* The result panel, not the viewport, decides when five cards genuinely fit.
+   This also works when the workspace changes from two columns to one. */
+@container palette-results (min-width: 850px) {
   .palette-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .palette-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .swatch {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+  }
+
+  .swatch-chip {
+    height: 100%;
+    min-height: 148px;
+    flex-direction: column;
   }
 
   .roles-list,
@@ -932,4 +1069,9 @@ pre {
   .hero-actions {
     grid-template-columns: 1fr;
   }
+}
+
+/* Kept last so the native hidden state wins over component display rules. */
+[hidden] {
+  display: none;
 }
