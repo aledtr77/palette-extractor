@@ -24,10 +24,6 @@
   box-sizing: border-box;
 }
 
-[hidden] {
-  display: none !important;
-}
-
 .sr-only {
   position: absolute;
   width: 1px;
@@ -184,7 +180,6 @@ h2 {
     transform 160ms ease;
 }
 
-.dropzone:hover,
 .dropzone.is-dragging,
 .dropzone:focus-visible,
 .dropzone:focus-within {
@@ -284,10 +279,6 @@ h2 {
   transform: translateY(1px);
 }
 
-.button:hover:not(:disabled) {
-  filter: brightness(1.1);
-}
-
 .button:focus-visible,
 .swatch-chip:focus-visible,
 .hex-copy:focus-visible,
@@ -330,11 +321,6 @@ pre:focus-visible {
 .secondary {
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.07);
-}
-
-.secondary:hover {
-  border-color: rgba(143, 206, 255, 0.58);
-  background: rgba(0, 123, 240, 0.16);
 }
 
 .analyze-button {
@@ -778,11 +764,36 @@ pre {
   text-decoration-color: rgba(224, 224, 224, 0.32);
 }
 
-.site-footer a:hover,
 .site-footer a:focus-visible {
   color: var(--ink);
   text-decoration-color: currentColor;
   text-underline-offset: 6px;
+}
+
+/* Hover belongs to devices that can actually hover. Touch browsers otherwise
+   keep the last tapped element in a sticky :hover state, making an unrelated
+   button look active while the user scrolls the page. */
+@media (hover: hover) and (pointer: fine) {
+  .dropzone:hover {
+    border-color: var(--blue);
+    background: linear-gradient(180deg, rgba(0, 123, 240, 0.24), rgba(255, 255, 255, 0.04));
+    transform: translateY(-1px);
+  }
+
+  .button:hover:not(:disabled) {
+    filter: brightness(1.1);
+  }
+
+  .secondary:hover {
+    border-color: rgba(143, 206, 255, 0.58);
+    background: rgba(0, 123, 240, 0.16);
+  }
+
+  .site-footer a:hover {
+    color: var(--ink);
+    text-decoration-color: currentColor;
+    text-underline-offset: 6px;
+  }
 }
 
 .site-footer a:focus-visible {
@@ -797,7 +808,36 @@ pre {
   }
 
   .hero {
-    align-items: flex-start;
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    justify-items: stretch;
+    text-align: center;
+  }
+
+  .hero > div:first-child {
+    width: 100%;
+  }
+
+  .hero-title,
+  .hero-subtitle {
+    width: 100%;
+    max-width: none;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .hero-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: stretch;
+    margin-inline: auto;
+  }
+
+  .hero-actions .button {
+    width: 100%;
   }
 
   .workspace,
@@ -820,10 +860,14 @@ pre {
   }
 
   .hero {
-    display: grid;
     gap: 12px;
     min-height: auto;
     padding-bottom: 20px;
+    text-align: center;
+  }
+
+  .hero > div:first-child {
+    width: 100%;
   }
 
   .hero-title {
@@ -833,6 +877,7 @@ pre {
   }
 
   .hero-subtitle {
+    margin-inline: auto;
     margin-bottom: 4px;
     font-size: 0.86rem;
   }
@@ -841,8 +886,6 @@ pre {
      switch. Left at three, Demo would size to its text and a dead column
      would sit next to Reset. */
   .hero-actions {
-    width: 100%;
-    display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
@@ -970,13 +1013,17 @@ pre {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
+  .dropzone,
+  .button,
+  .palette-grid,
+  .detail-grid,
+  .site-footer a {
+    transition: none;
+  }
+
+  .button[aria-busy="true"] svg,
+  .results.is-updating .role-placeholder {
+    animation: none;
   }
 }
 
@@ -1022,4 +1069,9 @@ pre {
   .hero-actions {
     grid-template-columns: 1fr;
   }
+}
+
+/* Kept last so the native hidden state wins over component display rules. */
+[hidden] {
+  display: none;
 }
