@@ -1,7 +1,7 @@
 # Palette Extractor
 
 [![lint · tests · build](https://img.shields.io/github/actions/workflow/status/aledtr77/palette-extractor/ci.yml?branch=main&label=lint%20%C2%B7%20tests%20%C2%B7%20build)](https://github.com/aledtr77/palette-extractor/actions/workflows/ci.yml)
-[![133 tests](https://img.shields.io/badge/tests-133%20(Vitest)-3fb950)](tests/)
+[![130 tests](https://img.shields.io/badge/tests-130%20(Vitest)-3fb950)](tests/)
 [![licence: MIT](https://img.shields.io/badge/licence-MIT-0969da)](LICENSE)
 
 Pulls a colour palette out of an image and turns it into something usable: UI roles,
@@ -13,7 +13,7 @@ is no server and no request to send it anywhere.
 **Use it: [palette-extractor-7hm.pages.dev](https://palette-extractor-7hm.pages.dev/)** — the
 working tool, not a preview of one, built from this repo, from this branch.
 
-[![The tool after running its built-in demo: eight dominant colours with share, hex, rgb, hsl and contrast ratio, the UI roles derived from them, and the CSS export](public/preview.jpg)](https://palette-extractor-7hm.pages.dev/)
+[![The tool after running its built-in demo: five dominant colours with share, hex, rgb, hsl and contrast ratio, the UI roles derived from them, and the CSS export](public/preview.jpg)](https://palette-extractor-7hm.pages.dev/)
 
 That is the built-in **Demo** button, not a staged screenshot — clone this repo, run it
 and press the button to get the same thing. Two commands, no key, no account, nothing to
@@ -68,7 +68,7 @@ Built with modular JavaScript and Vite. The only runtime dependency is
 
 ## Tests
 
-133 tests over the parts that run without a DOM: the sRGB → HSL and sRGB → Lab
+130 tests over the parts that run without a DOM: the sRGB → HSL and sRGB → Lab
 conversions, relative luminance and the WCAG ratio, the threshold that decides two
 colours are the same one, the role assignment, and the CSS and JSON that come out the
 other end. They check values that can be worked out by hand or come from the WCAG
@@ -87,7 +87,7 @@ Extraction from a real image, the camera and the clipboard need a browser, so th
 checked in one. Lint, tests and build all run on every push.
 
 ```bash
-npm test         # 133 tests (Vitest)
+npm test         # 130 tests (Vitest)
 npm run lint     # ESLint
 ```
 

@@ -6,6 +6,7 @@ const CAPTURE_QUALITY = 0.92;
 
 let stream = null;
 let videoElement = null;
+let lifecycleToken = 0;
 
 export function isSupported() {
   return Boolean(navigator.mediaDevices?.getUserMedia);
@@ -20,10 +21,12 @@ export function isActive() {
 // as it came from getUserMedia; pass it to statusKeyForError() to say why.
 export async function start({ container, label }) {
   stop();
+  const token = lifecycleToken;
 
   if ((await hasVideoInput()) === false) return false;
+  if (token !== lifecycleToken) return false;
 
-  stream = await navigator.mediaDevices.getUserMedia({
+  const nextStream = await navigator.mediaDevices.getUserMedia({
     video: {
       facingMode: { ideal: 'environment' },
       width: { ideal: 1280 },
@@ -31,6 +34,15 @@ export async function start({ container, label }) {
     },
     audio: false,
   });
+
+  // A reset or a newer camera request may happen while the permission prompt
+  // is open. Never let that older request resurrect a stream afterwards.
+  if (token !== lifecycleToken) {
+    nextStream.getTracks().forEach((track) => track.stop());
+    return false;
+  }
+
+  stream = nextStream;
 
   const video = document.createElement('video');
   video.className = 'camera-preview';
@@ -43,6 +55,12 @@ export async function start({ container, label }) {
   container.replaceChildren(video);
   video.srcObject = stream;
   await video.play();
+
+  if (token !== lifecycleToken) {
+    video.srcObject = null;
+    return false;
+  }
+
   videoElement = video;
 
   return true;
@@ -61,6 +79,8 @@ export function capture() {
 }
 
 export function stop() {
+  lifecycleToken += 1;
+
   if (stream) {
     stream.getTracks().forEach((track) => track.stop());
     stream = null;

@@ -4,12 +4,6 @@
 // JavaScript afterwards. Everything the user reads that never changes lives in
 // this file; what has to be produced at runtime comes from strings.js.
 
-import {
-  DEFAULT_PALETTE_SIZE,
-  MAX_PALETTE_SIZE,
-  MIN_PALETTE_SIZE,
-} from './extractor.js';
-
 // Shared by the markup below and by the reset, so the two cannot drift apart.
 export const EMPTY_CSS_PREVIEW = ':root {\n  --color-1: ...\n}';
 
@@ -31,8 +25,8 @@ export const APP_MARKUP = `
     </section>
 
     <section class="workspace">
-      <aside class="input-panel">
-        <label class="dropzone" id="dropzone" for="fileInput" role="button" tabindex="0">
+      <aside class="input-panel" aria-label="Image source and extraction settings">
+        <label class="dropzone" id="dropzone" for="fileInput">
           <input
             class="file-input"
             id="fileInput"
@@ -42,7 +36,7 @@ export const APP_MARKUP = `
           />
           <span class="drop-icon" data-icon="upload"></span>
           <span class="drop-title">Upload or drop a photo</span>
-          <span class="drop-meta" id="dropMeta">Local browser analysis. No upload.</span>
+          <span class="drop-meta" id="dropMeta">PNG, JPG, WebP, GIF or BMP · max 12 MB · never uploaded</span>
         </label>
 
         <div class="source-actions">
@@ -51,8 +45,8 @@ export const APP_MARKUP = `
           </button>
         </div>
 
-        <div class="preview-frame" id="previewFrame">
-          <div class="empty-preview"></div>
+        <div class="preview-frame" id="previewFrame" aria-live="polite" aria-label="Image preview">
+          <div class="empty-preview" aria-hidden="true"></div>
         </div>
 
         <div class="camera-actions" id="cameraActions" hidden>
@@ -64,50 +58,37 @@ export const APP_MARKUP = `
           </button>
         </div>
 
-        <div class="control-row">
-          <label for="paletteSize">Colors</label>
-          <output id="paletteSizeValue" for="paletteSize">${DEFAULT_PALETTE_SIZE}</output>
-        </div>
-        <input
-          class="range"
-          id="paletteSize"
-          type="range"
-          min="${MIN_PALETTE_SIZE}"
-          max="${MAX_PALETTE_SIZE}"
-          value="${DEFAULT_PALETTE_SIZE}"
-        />
-
         <button class="button primary analyze-button" id="analyzeBtn" type="button" data-icon="sparkles">
           <span>Extract palette</span>
         </button>
 
-        <div class="metrics">
+        <dl class="metrics">
           <div>
-            <span>Image</span>
-            <strong id="imageSize">-</strong>
+            <dt>Image</dt>
+            <dd id="imageSize">-</dd>
           </div>
           <div>
-            <span>Average</span>
-            <strong id="averageColor">-</strong>
+            <dt>Average</dt>
+            <dd id="averageColor">-</dd>
           </div>
           <div>
-            <span>Pixels read</span>
-            <strong id="pixelCount">-</strong>
+            <dt>Pixels read</dt>
+            <dd id="pixelCount">-</dd>
           </div>
-        </div>
+        </dl>
       </aside>
 
-      <section class="results">
+      <section class="results" aria-labelledby="paletteHeading">
         <div class="section-head">
           <div>
-            <h2>Dominant palette</h2>
-            <p>Sorted by perceptual relevance, not only by raw pixel count.</p>
+            <h2 id="paletteHeading">Dominant palette</h2>
+            <p>The 5 most prevalent colors, ordered by their share of the image.</p>
           </div>
           <!-- Visible as well as announced. Every message the app produces
                arrives here — "Image is too large", "Camera permission denied",
                "CSS copied" — and a message a sighted user cannot see is the
                same as no message at all: the app just appears not to react. -->
-          <div class="status" id="status" role="status" aria-live="polite" data-status-key="ready" data-status-tone="neutral">Ready</div>
+          <div class="status" id="status" role="status" aria-live="polite" aria-atomic="true" data-status-key="ready" data-status-tone="neutral">Ready</div>
         </div>
 
         <div class="palette-grid" id="paletteGrid">
@@ -115,10 +96,10 @@ export const APP_MARKUP = `
         </div>
 
         <div class="detail-grid">
-          <section class="panel roles-panel">
+          <section class="panel roles-panel" aria-labelledby="rolesHeading">
             <div class="section-head compact">
               <div>
-                <h2>UI roles</h2>
+                <h2 id="rolesHeading">UI roles</h2>
                 <p>Colors ready for theme, text and CTAs.</p>
               </div>
             </div>
@@ -126,28 +107,28 @@ export const APP_MARKUP = `
             <div class="contrast-card" id="contrastCard"></div>
           </section>
 
-          <section class="panel export-panel">
+          <section class="panel export-panel" aria-labelledby="exportHeading">
             <div class="section-head compact">
               <div>
-                <h2>Export</h2>
+                <h2 id="exportHeading">Export</h2>
                 <p>CSS variables and JSON generated from the current palette.</p>
               </div>
             </div>
             <div class="export-actions">
-              <button class="button secondary" id="copyCssBtn" type="button" data-icon="copy">
-                <span>CSS</span>
+              <button class="button secondary" id="copyCssBtn" type="button" data-icon="copy" disabled>
+                <span>Copy CSS</span>
               </button>
-              <button class="button secondary" id="copyJsonBtn" type="button" data-icon="copy">
-                <span>JSON</span>
+              <button class="button secondary" id="copyJsonBtn" type="button" data-icon="copy" disabled>
+                <span>Copy JSON</span>
               </button>
-              <button class="button secondary" id="downloadCssBtn" type="button" data-icon="download">
-                <span>.css</span>
+              <button class="button secondary" id="downloadCssBtn" type="button" data-icon="download" disabled>
+                <span>Download CSS</span>
               </button>
-              <button class="button secondary" id="downloadJsonBtn" type="button" data-icon="download">
-                <span>.json</span>
+              <button class="button secondary" id="downloadJsonBtn" type="button" data-icon="download" disabled>
+                <span>Download JSON</span>
               </button>
             </div>
-            <pre id="codePreview">${EMPTY_CSS_PREVIEW}</pre>
+            <pre id="codePreview" tabindex="0" aria-label="Generated CSS preview">${EMPTY_CSS_PREVIEW}</pre>
           </section>
         </div>
       </section>

@@ -11,10 +11,12 @@ const STRINGS = {
   image: 'Image',
   camera: 'Camera',
   themePreview: 'Theme preview',
+  extractAction: 'Extract palette',
+  analyzingAction: 'Analyzing…',
   emptyPalette: 'Upload an image or start the demo.',
   contrastEmpty: 'Contrast controls will appear after analysis.',
   noColorsFound:
-    'Nothing to extract here. The sampler skips pure white and pure black, and this image is made of little else.',
+    'No opaque colors were found in this image.',
 
   roles: {
     background: 'Background',

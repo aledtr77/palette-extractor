@@ -20,7 +20,7 @@ export function swatchMarkup(color, index) {
   const position = String(index + 1).padStart(2, '0');
 
   return `
-    <article class="swatch">
+    <article class="swatch" aria-label="Color ${index + 1}: ${color.hex}, ${coverage}% coverage">
       <button
         class="swatch-chip"
         type="button"
@@ -77,9 +77,9 @@ export function contrastMarkup(roles) {
     <div class="contrast-preview" style="background:${roles.background.hex};color:${roles.text.hex}">
       <span>${t('themePreview')}</span>
       <strong>Primary ${primaryRatio.toFixed(1)}:1</strong>
-      <button type="button" style="background:${roles.primary.hex};color:${readableTextColor(roles.primary).hex}">
+      <span class="preview-cta" style="background:${roles.primary.hex};color:${readableTextColor(roles.primary).hex}">
         CTA
-      </button>
+      </span>
     </div>
     <div class="contrast-list">
       <span>Text / Background ${ratioMarkup(textRatio)}</span>

@@ -8,9 +8,9 @@
 import { describe, expect, it } from 'vitest';
 import { rgbToHsl, rgbToLab } from '../src/color.js';
 import {
+  DOMINANT_COLOR_COUNT,
   extractPalette,
   mergeNearbyColors,
-  normalizePaletteSize,
   paletteToCss,
   paletteToJson,
   pickRoles,
@@ -26,35 +26,13 @@ function bucket(r, g, b, count) {
     hsl,
     lab: rgbToLab({ r, g, b }),
     count,
-    weight: count * (0.76 + hsl.s / 180),
+    weight: count,
   };
 }
 
-describe('normalizePaletteSize', () => {
-  it('keeps the slider inside 4–10', () => {
-    expect(normalizePaletteSize(2)).toBe(4);
-    expect(normalizePaletteSize(99)).toBe(10);
-    expect(normalizePaletteSize('7')).toBe(7);
-    expect(normalizePaletteSize(7.6)).toBe(8);
-  });
-
-  it('falls back to 8 when there is no number at all', () => {
-    expect(normalizePaletteSize('abc')).toBe(8);
-    expect(normalizePaletteSize(undefined)).toBe(8);
-    expect(normalizePaletteSize(NaN)).toBe(8);
-  });
-
-  // Number(null) and Number('') are both 0 — finite, and low enough to clamp to
-  // the minimum. They mean the same thing undefined means, so they have to give
-  // the same answer, or an empty input silently becomes a four-colour palette.
-  it('treats null and the empty string as absent, not as zero', () => {
-    expect(normalizePaletteSize(null)).toBe(8);
-    expect(normalizePaletteSize('')).toBe(8);
-  });
-
-  it('still clamps a real zero to the minimum', () => {
-    expect(normalizePaletteSize(0)).toBe(4);
-    expect(normalizePaletteSize('0')).toBe(4);
+describe('palette product rule', () => {
+  it('always asks for five dominant colors', () => {
+    expect(DOMINANT_COLOR_COUNT).toBe(5);
   });
 });
 
@@ -108,13 +86,13 @@ describe('extractPalette', () => {
     }
   });
 
-  it('sorts by score, strongest first', () => {
+  it('sorts by image coverage, most prevalent first', () => {
     const palette = extractPalette(
       [bucket(220, 40, 40, 4000), bucket(40, 90, 220, 3000), bucket(30, 160, 90, 500)],
       3,
     );
-    const scores = palette.map((c) => c.score);
-    expect([...scores].sort((a, b) => b - a)).toEqual(scores);
+    const coverage = palette.map((color) => color.coverage);
+    expect([...coverage].sort((a, b) => b - a)).toEqual(coverage);
   });
 
   it('never asks for more centres than there are buckets', () => {
@@ -122,8 +100,8 @@ describe('extractPalette', () => {
     expect(extractPalette([bucket(10, 20, 30, 5)], 10).length).toBeLessThanOrEqual(1);
   });
 
-  // An image with four colours in it cannot yield ten, and the slider is
-  // allowed to ask for ten. Returning fewer is the right answer, not a failure.
+  // A source with fewer distinct colors cannot honestly yield five. Returning
+  // fewer is correct; inventing colors would make the percentages meaningless.
   it('never returns more than it was asked for', () => {
     const buckets = [
       bucket(220, 40, 40, 4000),
